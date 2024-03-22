@@ -140,19 +140,8 @@ public class MainActivity extends AppCompatActivity implements post {
             else typeInterval[i]="N";
         }
         typeName[types.size()]= "Создать свой режим";
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this,
-                R.layout.drop_down_item,
-//                R.id.mainText,
-                typeName
-        );
-//        ArrayAdapter<String> typeInt = new ArrayAdapter<>(
-//                this,
-//                R.layout.drop_down_item,
-//                R.id.sideSymbol,
-//                typeInterval);
+        CustomAdapter adapter = new CustomAdapter(this, typeName, typeInterval);
         autoCompleteTextView.setAdapter(adapter);
-//        autoCompleteTextView.setAdapter(typeInt);
     }
     public void addspisok(Type newType){
         types.add(newType);
