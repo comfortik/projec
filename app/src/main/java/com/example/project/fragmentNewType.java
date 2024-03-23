@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 
@@ -42,11 +43,13 @@ public class fragmentNewType extends Fragment {
             public void onClick(View v) {
                 newName= etName.getText().toString();
                 Fragment chooseFragment= new FragmentChoose(newName);
-                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.fragment, chooseFragment)
-                        .addToBackStack(null)
-                        .commit();
+                FragmentActivity a = requireActivity();
+                FragmentPost.FragmentPost(chooseFragment, a);
+//                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+//                fragmentManager.beginTransaction()
+//                        .replace(R.id.fragment, chooseFragment)
+//                        .addToBackStack(null)
+//                        .commit();
             }
         });
         etName.setOnEditorActionListener(new TextView.OnEditorActionListener() {

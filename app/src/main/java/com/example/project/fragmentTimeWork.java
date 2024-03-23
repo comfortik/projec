@@ -69,12 +69,13 @@ public class fragmentTimeWork extends Fragment {
             @Override
             public void onClick(View v) {
                 long timeWork = (timePicker.getHour()*3600+timePicker.getMinute()*60)*1000;
-                fragmentTimeRest fragmentTimeRest = new fragmentTimeRest(name, timeWork);
-                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.fragment, fragmentTimeRest)
-                        .addToBackStack(null)
-                        .commit();
+                Fragment fragmentTimeRest = new fragmentTimeRest(name, timeWork);
+                FragmentPost.FragmentPost(fragmentTimeRest, requireActivity());
+//                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+//                fragmentManager.beginTransaction()
+//                        .replace(R.id.fragment, fragmentTimeRest)
+//                        .addToBackStack(null)
+//                        .commit();
             }
         });
         btnBack.setOnClickListener(new View.OnClickListener() {

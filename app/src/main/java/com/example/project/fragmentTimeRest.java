@@ -55,13 +55,8 @@ public class fragmentTimeRest extends Fragment {
                     ((post)activity).postpost(name, timeWork, timeRest);
                 }catch (ClassCastException ignored){}
                 getActivity().getSupportFragmentManager().beginTransaction().remove(fragmentTimeRest.this).commit();
-                fragmentNewType fragmentNewType = new fragmentNewType();
-                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.fragment, fragmentNewType)
-                        .addToBackStack(null)
-                        .commit();
-
+                Fragment fragmentNewType = new fragmentNewType();
+                FragmentPost.FragmentPost(fragmentNewType, requireActivity());
             }
         });
 

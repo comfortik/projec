@@ -30,11 +30,12 @@ public class FragmentChoose extends Fragment {
             public void onClick(View v) {
                 boolean isChecked= aSwitch.isChecked();
                 Fragment fragmentTimeWork = new fragmentTimeWork(newName, isChecked);
-                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.fragment, fragmentTimeWork)
-                        .addToBackStack(null)
-                        .commit();
+                FragmentPost.FragmentPost(fragmentTimeWork, requireActivity());
+//                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+//                fragmentManager.beginTransaction()
+//                        .replace(R.id.fragment, fragmentTimeWork)
+//                        .addToBackStack(null)
+//                        .commit();
             }
         });
         btnBack.setOnClickListener(new View.OnClickListener() {
