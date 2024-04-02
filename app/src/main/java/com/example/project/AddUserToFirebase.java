@@ -27,15 +27,16 @@ public class AddUserToFirebase {
 
 
     static String id;
-    public AddUserToFirebase(Context context, FirebaseFirestore fb, FirebaseAuth mAuth){
+    public AddUserToFirebase(Context context){
         this.context=context;
-        this.fb=fb;
-        this.mAuth=mAuth;
+
     }
     public static String getId() {
         return id;
     }
     public void anonimouseSignUp() {
+        mAuth.getInstance();
+        fb=FirebaseFirestore.getInstance();
         mAuth.signInAnonymously()
                 .addOnCompleteListener((Activity) context, task -> {
                     if (task.isSuccessful()) {

@@ -43,17 +43,13 @@ public class MainActivity extends AppCompatActivity implements post {
         setContentView(binding.getRoot());
         fb = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        Type type = new Type("asdasd", 211222, 1231);
-        binding.tvs.setText(type.getName());
-        fb.collection("Types").add(type);
         binding.btn.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, EmotionDiaryActivity.class);
             startActivity(intent);
         });
-        AddUserToFirebase add= new AddUserToFirebase(this, fb, mAuth);
+        AddUserToFirebase add= new AddUserToFirebase(this);
         add.anonimouseSignUp();
 //        anonimouseSignUp();
-        fb.collection("Types").add(new Type("adsasd",12312));
         types = new ArrayList<>();
         types.add(new Type("Sleep", 6000, 5000));
         types.add(new Type("Study", 50000,5000));
