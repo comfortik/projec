@@ -9,6 +9,10 @@
     android:gravity="bottom"
     tools:context=".MainActivity"
     android:layout_marginBottom="62dp">
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn"/>
     <TextView
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -24,6 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Режим"
+        android:fontFamily="monospace"
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
         <AutoCompleteTextView
             android:id="@+id/fillied_exposed"
@@ -83,5 +88,7 @@
         </LinearLayout>
 
     </LinearLayout>
+
+
 
 </LinearLayout>

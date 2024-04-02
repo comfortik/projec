@@ -1,10 +1,6 @@
 package com.example.project;
 import android.content.Context;
 
-import com.example.project.CustomAdapter;
-import com.example.project.MainActivity;
-import com.example.project.Type;
-
 import java.util.List;
 
 public class Spisok {

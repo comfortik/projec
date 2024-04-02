@@ -1,124 +1,118 @@
 package com.example.project;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
-import android.widget.LinearLayout;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentContainerView;
 
 import com.example.project.databinding.ActivityMainBinding;
-import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-
 public class MainActivity extends AppCompatActivity implements post {
-    int time, minutes, hours,sec;
     long milliesec;
     long savemilliesec;
     boolean isRunning, cancelButton, porabotal;
     CountDownTimer countDownTimer;
     AlertDialog.Builder builder;
-    Type currentType;
+    public Type currentType;
     ArrayList<Type> types;
     int countRest;
     int countWork ;
-    boolean first = true;
     private ActivityMainBinding binding;
-
+    FirebaseFirestore fb;
+    FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
         setContentView(binding.getRoot());
+        fb = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        Type type = new Type("asdasd", 211222, 1231);
+        binding.tvs.setText(type.getName());
+        fb.collection("Types").add(type);
+        binding.btn.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, EmotionDiaryActivity.class);
+            startActivity(intent);
+        });
+        AddUserToFirebase add= new AddUserToFirebase(this, fb, mAuth);
+        add.anonimouseSignUp();
+//        anonimouseSignUp();
+        fb.collection("Types").add(new Type("adsasd",12312));
         types = new ArrayList<>();
         types.add(new Type("Sleep", 6000, 5000));
         types.add(new Type("Study", 50000,5000));
         binding.filliedExposed.setAdapter(Spisok.createSpisok(this, types));
-        FirebaseFirestore fb = FirebaseFirestore.getInstance();
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        binding.btnTimer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                countWork= 0;
-                countRest=0;
-                porabotal= true;
-                if (countDownTimer != null) {
-                    countDownTimer.cancel();
-                }
-                binding.tvs.setText("Работа");
-                binding.btnTimer.setVisibility(View.GONE);
-                binding.ll.setVisibility(View.VISIBLE);
-                Timer(milliesec);
+        binding.btnTimer.setOnClickListener(v -> {
+            countWork= 0;
+            countRest=0;
+            porabotal= true;
+            if (countDownTimer != null) {
+                countDownTimer.cancel();
             }
+            binding.tvs.setText("Работа");
+            binding.btnTimer.setVisibility(View.GONE);
+            binding.ll.setVisibility(View.VISIBLE);
+            Timer(milliesec);
         });
-        binding.filliedExposed.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (countDownTimer != null) {
-                    countDownTimer.cancel();
-                }
-                binding.tvTimer.setText("00:00:00");
-                countWork=0;
-                countRest=0;
-                binding.btnTimer.setVisibility(View.VISIBLE);
-                binding.ll.setVisibility(View.GONE);
-                if(position == types.size()){
-                    createNewType();
-                }else{
+        binding.filliedExposed.setOnItemClickListener((parent, view, position, id) -> {
+            if (countDownTimer != null) {
+                countDownTimer.cancel();
+            }
+            binding.tvTimer.setText("00:00:00");
+            countWork=0;
+            countRest=0;
+            binding.btnTimer.setVisibility(View.VISIBLE);
+            binding.ll.setVisibility(View.GONE);
+            if(position == types.size()){
+                createNewType();
+            }else{
 
-                    Toast.makeText(MainActivity.this, binding.filliedExposed.getText().toString(),Toast.LENGTH_SHORT).show();
-                    currentType= types.get(position);
-                    milliesec= currentType.getTimeWork();
-                }
+                Toast.makeText(MainActivity.this, binding.filliedExposed.getText().toString(),Toast.LENGTH_SHORT).show();
+                currentType= types.get(position);
+                milliesec= currentType.getTimeWork();
             }
         });
-        binding.btnTimerCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cancelButton=true;
-                if(!currentType.isInterval()){
-                    countDownTimer.cancel();
-                    AlertDilaog();
-                }
-                else{
-                    countDownTimer.cancel();
-                    binding.tvs.setText((countRest+" "+countWork).toString());
-                    AlertDilaog();
-                }
+        binding.btnTimerCancel.setOnClickListener(v -> {
+            cancelButton=true;
+            if(!currentType.isInterval()){
+                countDownTimer.cancel();
+                AlertDilaog();
+            }
+            else{
+                countDownTimer.cancel();
+                binding.tvs.setText((countRest+" "+countWork).toString());
+                AlertDilaog();
             }
         });
-        binding.btnTimerPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(isRunning){
-                    countDownTimer.cancel();
-                    binding.btnTimerPause.setText("Play");
-                    isRunning=false;
-                } else if (!isRunning) {
-                    Timer(savemilliesec);
-                    binding.btnTimerPause.setText("Pause");
-                    isRunning= true;
-                }
+        binding.btnTimerPause.setOnClickListener(v -> {
+            if(isRunning){
+                countDownTimer.cancel();
+                binding.btnTimerPause.setText("Play");
+                isRunning=false;
+            } else if (!isRunning) {
+                Timer(savemilliesec);
+                binding.btnTimerPause.setText("Pause");
+                isRunning= true;
             }
         });
     }
-
     public void Timer(long milliesec){
-
         countDownTimer= new CountDownTimer(milliesec,1000){
             @Override
             public void onTick(long millisUntilFinished) {
@@ -147,9 +141,6 @@ public class MainActivity extends AppCompatActivity implements post {
                     binding.tvTimer.setText("00:00:00");
                     finishTimer();
                 }
-
-
-
             }
         }.start();
     }
@@ -173,27 +164,18 @@ public class MainActivity extends AppCompatActivity implements post {
         builder.setTitle("Подтверждение")
                 .setMessage("Вы точно хотите остановить таймер?")
                 .setCancelable(true)
-                .setPositiveButton("Да", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        countDownTimer.cancel();
-                        binding.tvTimer.setText("00:00:00");
-                        binding.btnTimer.setVisibility(View.VISIBLE);
-                        binding.ll.setVisibility(View.GONE);
-                        finishTimer();
-                    }
+                .setPositiveButton("Да", (dialog, which) -> {
+                    countDownTimer.cancel();
+                    binding.tvTimer.setText("00:00:00");
+                    binding.btnTimer.setVisibility(View.VISIBLE);
+                    binding.ll.setVisibility(View.GONE);
+                    finishTimer();
                 })
-                .setNegativeButton("Нет ", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Timer(savemilliesec);
-                        dialog.cancel();
-                    }
+                .setNegativeButton("Нет ", (dialog, which) -> {
+                    Timer(savemilliesec);
+                    dialog.cancel();
                 })
                 .show();
-    }
-    public void intervalTimer(){
-
     }
     public void finishTimer(){
         if(!currentType.isInterval()){
@@ -214,12 +196,7 @@ public class MainActivity extends AppCompatActivity implements post {
                 builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+String.valueOf(hour)+" часов, "+ String.valueOf(minutes)+" минут, "+String.valueOf(sec)+" секунд");
             }
             builder.setTitle("Конец")
-                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    })
+                    .setPositiveButton("ok", (dialog, which) -> dialog.cancel())
                     .show();
         }
         else {
@@ -233,7 +210,6 @@ public class MainActivity extends AppCompatActivity implements post {
                 workTime = countWork*currentType.getTimeWork()/1000;
                 restTime = countRest*currentType.getTimeRest()/1000+(currentType.getTimeWork()-savemilliesec)/1000;
             }
-
             long hours= workTime/3600;
             long minutes = (workTime-hours*3600)/60;
             long sec = (workTime-hours*3600-minutes*60);
@@ -242,18 +218,69 @@ public class MainActivity extends AppCompatActivity implements post {
             long secRest = (restTime-hours*3600-minutes*60);
             builder.setTitle("Количество интервалов отдыха: " +countRest+" Количество интервалов работы: " +countWork)
                     .setMessage("Время в работе: "+  " : "+ hours+" : " + minutes+" : "+ sec+"\n"+"Время в отдыхе: "+  " : "+ hoursRest+" : " + minutesRest+" : "+ secRest)
-                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    })
+                    .setPositiveButton("ok", (dialog, which) -> dialog.cancel())
                     .show();
         }
-
-
-
     }
+//    public void anonimouseSignUp() {
+//        mAuth.signInAnonymously()
+//                .addOnCompleteListener(MainActivity.this, task -> {
+//                    if (task.isSuccessful()) {
+//                        Log.d(TAG, "signInAnonymously:success");
+//                        Toast.makeText(MainActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
+//                        userExist();
+//                    } else {
+//                        Log.w(TAG, "signInAnonymously:failure", task.getException());
+//                        Toast.makeText(MainActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//    }
+//
+//
+//
+//    public void addUser() {
+//        FirebaseUser user = mAuth.getCurrentUser();
+//        String uid = user.getUid().toString();
+//
+//        Map<String, Object> userData = new HashMap<>();
+//        userData.put("uid", uid);
+//        fb.collection("Users")
+//                .add(userData)
+//                .addOnSuccessListener(documentReference -> {
+//                    Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+//                    Toast.makeText(MainActivity.this, "DocumentSnapshot added with ID: " + documentReference.getId(),
+//                            Toast.LENGTH_SHORT).show();
+//                })
+//                .addOnFailureListener(e -> {
+//                    Log.w(TAG, "Error adding document", e);
+//                    Toast.makeText(MainActivity.this, "Error adding document",
+//                            Toast.LENGTH_SHORT).show();
+//                });
+//    }
+//
+//    public void userExist() {
+//        FirebaseUser user = mAuth.getCurrentUser();
+//        if (user != null) {
+//            fb.collection("Users")
+//                    .whereEqualTo("uid", user.getUid())
+//                    .get()
+//                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                            if (task.isSuccessful() && !task.getResult().isEmpty()) {
+//                                Toast.makeText(MainActivity.this, "Файлик имеется", Toast.LENGTH_SHORT).show();
+//                            } else {
+//                                Toast.makeText(MainActivity.this, "Нет файлика, создаем новый!", Toast.LENGTH_SHORT).show();
+//                                addUser();
+//                            }
+//                        }
+//                    });
+//        } else {
+//            Toast.makeText(MainActivity.this, "Проблема с FirebaseUser", Toast.LENGTH_SHORT).show();
+//        }
+//    }
+
 }
+
 
 
