@@ -1,15 +1,24 @@
 package com.example.project;
 
+import android.util.Log;
+
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.List;
+
 public class Type {
         String name;
+        List<Type> types;
         long timeWork, timeRest;
         boolean interval;
+        FirebaseFirestore fb;
         public Type(String name, long timeWork, long timeRest){
             this.name = name;
             this.timeWork=timeWork;
             this.timeRest= timeRest;
             interval= true;
         }
+        public Type(){};
 
         public boolean isInterval() {
             return interval;
@@ -45,6 +54,8 @@ public class Type {
         public void setName(String name) {
             this.name = name;
         }
+
+
 
     }
 

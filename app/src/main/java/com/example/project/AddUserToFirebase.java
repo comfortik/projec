@@ -27,9 +27,10 @@ public class AddUserToFirebase {
 
 
     static String id;
-    public AddUserToFirebase(Context context){
+    public AddUserToFirebase(Context context, FirebaseFirestore fb, FirebaseAuth mAuth){
         this.context=context;
-
+        this.fb=fb;
+        this.mAuth=mAuth;
     }
     public static String getId() {
         return id;

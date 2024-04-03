@@ -20,30 +20,32 @@ public class FirestoreEmotion {
     FirebaseFirestore fb;
     FirebaseUser user;
     Context context;
+    FirestoreGetId firestoreGetId;
     public FirestoreEmotion(Context context, FirebaseFirestore fb, FirebaseUser user){
 
         this.fb = fb;
         this.user = user;
         this.context=context;
     }
-    private void getId(String currentUserId, final EmotionDiaryActivity.OnIdReturnedListener listener){
-        fb.collection("Users")
-                .whereEqualTo("uid", currentUserId)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if(!queryDocumentSnapshots.isEmpty()){
-                            String id = queryDocumentSnapshots.getDocuments().get(0).getId();
-                            listener.onIdReturned(id);
-                        } else {
-                            listener.onIdReturned(null);
-                        }
-                    }
-                });
-    }
+//    private void getId(String currentUserId, final EmotionDiaryActivity.OnIdReturnedListener listener){
+//        fb.collection("Users")
+//                .whereEqualTo("uid", currentUserId)
+//                .get()
+//                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                        if(!queryDocumentSnapshots.isEmpty()){
+//                            String id = queryDocumentSnapshots.getDocuments().get(0).getId();
+//                            listener.onIdReturned(id);
+//                        } else {
+//                            listener.onIdReturned(null);
+//                        }
+//                    }
+//                });
+//    }
     public  void addEmotion(Emotion emotion){
-        getId(user.getUid(), userId -> {
+        firestoreGetId = new FirestoreGetId(fb);
+        firestoreGetId.getId(user.getUid(), userId -> {
             if (userId != null) {
                 fb.collection("Users")
                         .document(userId)

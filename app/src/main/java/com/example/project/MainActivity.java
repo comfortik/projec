@@ -1,13 +1,17 @@
 package com.example.project;
 
+import static android.content.ContentValues.TAG;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,11 +21,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.project.databinding.ActivityMainBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements post {
     long milliesec;
@@ -30,12 +39,17 @@ public class MainActivity extends AppCompatActivity implements post {
     CountDownTimer countDownTimer;
     AlertDialog.Builder builder;
     public Type currentType;
-    ArrayList<Type> types;
+    private List<Type> types;
     int countRest;
     int countWork ;
+    Spisok spisok;
+    CustomAdapter adapter;
     private ActivityMainBinding binding;
     FirebaseFirestore fb;
     FirebaseAuth mAuth;
+    FirestoreGetId firestoreGetId;
+
+    String userId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,17 +57,32 @@ public class MainActivity extends AppCompatActivity implements post {
         setContentView(binding.getRoot());
         fb = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+        firestoreGetId = new FirestoreGetId(fb);
         binding.btn.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, EmotionDiaryActivity.class);
             startActivity(intent);
         });
-        AddUserToFirebase add= new AddUserToFirebase(this);
+
+        firestoreGetId = new FirestoreGetId(fb);
+        firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
+            if (userId != null) {
+                this.userId =userId;
+            } else {
+                Log.d(TAG, "Пользователь не найден по UID");
+            }
+        });
+
+        spisok = new Spisok(this , fb, mAuth.getCurrentUser());
+        getTypes();
+        AddUserToFirebase add= new AddUserToFirebase(this, fb, mAuth);
         add.anonimouseSignUp();
-//        anonimouseSignUp();
-        types = new ArrayList<>();
-        types.add(new Type("Sleep", 6000, 5000));
-        types.add(new Type("Study", 50000,5000));
-        binding.filliedExposed.setAdapter(Spisok.createSpisok(this, types));
+
+
+//        types = new ArrayList<>();
+//        types.add(new Type("Sleep", 6000, 5000));
+//        types.add(new Type("Study", 50000,5000));
+
+
         binding.btnTimer.setOnClickListener(v -> {
             countWork= 0;
             countRest=0;
@@ -75,13 +104,12 @@ public class MainActivity extends AppCompatActivity implements post {
             countRest=0;
             binding.btnTimer.setVisibility(View.VISIBLE);
             binding.ll.setVisibility(View.GONE);
-            if(position == types.size()){
+            if (position == binding.filliedExposed.getAdapter().getCount() - 1) {
                 createNewType();
             }else{
-
                 Toast.makeText(MainActivity.this, binding.filliedExposed.getText().toString(),Toast.LENGTH_SHORT).show();
-                currentType= types.get(position);
-                milliesec= currentType.getTimeWork();
+
+
             }
         });
         binding.btnTimerCancel.setOnClickListener(v -> {
@@ -108,6 +136,9 @@ public class MainActivity extends AppCompatActivity implements post {
             }
         });
     }
+
+
+
     public void Timer(long milliesec){
         countDownTimer= new CountDownTimer(milliesec,1000){
             @Override
@@ -145,14 +176,52 @@ public class MainActivity extends AppCompatActivity implements post {
     }
     public void postpost(String name, long timeWork){
         binding.fragment.setVisibility(View.GONE);
-        Spisok.addType(types, new Type(name, timeWork));
-        binding.filliedExposed.setAdapter(Spisok.createSpisok(this, types));
+        addTypes(name,timeWork);
+        getTypes();
         binding.tvs.setText(name);
     }
+    public void getTypes(){
+        spisok.createSpisok(new DataLoadListener() {
+            @Override
+            public void onDataLoaded(CustomAdapter adapter) {
+                if (adapter != null) {
+                    binding.filliedExposed.setAdapter(adapter);
+                } else {
+                    // обработка ошибки загрузки данных
+                }
+            }
+        });
+    }
+    public void addTypes(String name, long timeWork, long timeRest){
+        fb.collection("Users")
+                .document(userId)
+                .collection("Types")
+                .add(new Type(name, timeWork,timeRest))
+                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                        if(task.isSuccessful()) Toast.makeText(MainActivity.this, "assss", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+    public void addTypes(String name, long timeWork){
+        fb.collection("Users")
+                .document(userId)
+                .collection("Types")
+                .add(new Type(name, timeWork))
+                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                        if(task.isSuccessful()) Toast.makeText(MainActivity.this, "assss", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
     public void postpost(String name, long timeWork, long timeRest){
         binding.fragment.setVisibility(View.GONE);
-        Spisok.addType(types, new Type(name, timeWork));
-        binding.filliedExposed.setAdapter(Spisok.createSpisok(this, types));
+        addTypes(name, timeWork, timeRest);
+        getTypes();
         binding.tvs.setText(name);
     }
     public void AlertDilaog(){
@@ -217,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements post {
                     .setPositiveButton("ok", (dialog, which) -> dialog.cancel())
                     .show();
         }
+
     }
 //    public void anonimouseSignUp() {
 //        mAuth.signInAnonymously()

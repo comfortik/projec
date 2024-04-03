@@ -3,6 +3,7 @@ package com.example.project;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.project.databinding.ActivityEmotionDiaryBinding;
@@ -11,8 +12,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class EmotionDiaryActivity extends AppCompatActivity {
-//
-//    com.example.project.databinding.ActivityEmotionDiaryBinding binding;
     ActivityEmotionDiaryBinding binding;
 
     FirebaseFirestore fb;
@@ -33,6 +32,7 @@ public class EmotionDiaryActivity extends AppCompatActivity {
         reactForEmotions = new ReactForEmotions();
 
         firestoreEmotion = new FirestoreEmotion(this, fb, user);
+
 
         binding.imgPloho.setOnClickListener(v -> {
             Emotion emotion= new Emotion(1);
@@ -79,6 +79,7 @@ public class EmotionDiaryActivity extends AppCompatActivity {
 //    }
     public void emotionBtns(Emotion emotion){
 //        addEmotion();
+        if(emotion!=null) Toast.makeText(this, "aaaa", Toast.LENGTH_SHORT);
         firestoreEmotion.addEmotion(emotion);
         int emotionId = emotion.getId();
         switch (emotionId){
