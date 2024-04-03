@@ -22,11 +22,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.project.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -108,7 +113,8 @@ public class MainActivity extends AppCompatActivity implements post {
                 createNewType();
             }else{
                 Toast.makeText(MainActivity.this, binding.filliedExposed.getText().toString(),Toast.LENGTH_SHORT).show();
-
+                String selectedTypeName = parent.getItemAtPosition(position).toString();
+                loadTypeFromFirestore(selectedTypeName);
 
             }
         });
@@ -135,6 +141,30 @@ public class MainActivity extends AppCompatActivity implements post {
                 isRunning= true;
             }
         });
+    }
+    private void loadTypeFromFirestore(String selectedType) {
+        fb.collection("Users")
+                .document(userId)
+                .collection("Types")
+                .whereEqualTo("name", selectedType) // Укажите значение, с которым сравнивать поле "name"
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            // Обработайте найденный документ
+                            Type type = documentSnapshot.toObject(Type.class);
+                            milliesec=type.getTimeWork();
+                            currentType=type;
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Обработка ошибки получения данных из Firestore
+                    }
+                });
     }
 
 
