@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.project.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -203,7 +204,12 @@ public class MainActivity extends AppCompatActivity implements post {
     }
     public void createNewType(){
         binding.fragment.setVisibility(View.VISIBLE);
+        NewTypeFragment newTypeFragment = new NewTypeFragment();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment, newTypeFragment);
+        ft.commit();
     }
+
     public void postpost(String name, long timeWork){
         binding.fragment.setVisibility(View.GONE);
         addTypes(name,timeWork);

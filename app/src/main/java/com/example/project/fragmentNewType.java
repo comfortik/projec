@@ -27,7 +27,6 @@ public class fragmentNewType extends Fragment {
 
         newName=null;
         ImageButton btn= view.findViewById(R.id.strelka);
-        ImageButton btnBack = view.findViewById(R.id.strelka_back);
         EditText etName = view.findViewById(R.id.etFragmentCreateType);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override

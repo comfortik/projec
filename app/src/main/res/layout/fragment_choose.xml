@@ -39,7 +39,7 @@
         android:orientation="horizontal"
         android:gravity="center_horizontal">
         <ImageButton
-            android:id="@+id/strelka_back"
+            android:id="@+id/strelkaBack"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_width="35dp"
