@@ -1,4 +1,4 @@
-package com.example.project;
+package com.example.project.Emotion;
 
 public class Emotion {
     boolean posleFocus;

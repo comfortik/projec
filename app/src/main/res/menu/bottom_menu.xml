@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/bottom_settings"
+        android:icon="@mipmap/ic_launcher_round"
+        android:title="Settings" />
+    <item
+        android:id="@+id/bottom_emotionDiary"
+        android:icon="@mipmap/ic_launcher_round"
+        android:title="Search" />
+    <item
+        android:id="@+id/bottom_timer"
+        android:icon="@mipmap/ic_launcher_round"
+        android:title="Home" />
+    <item
+        android:id="@+id/bottom_sound"
+        android:icon="@mipmap/ic_launcher_round"
+        android:title="Profile" />
+    <item
+        android:id="@+id/bottom_profile"
+        android:icon="@mipmap/ic_launcher_round"
+        android:title="Profile" />
+</menu>

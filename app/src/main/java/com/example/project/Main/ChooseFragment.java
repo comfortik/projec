@@ -1,6 +1,4 @@
-package com.example.project;
-
-import androidx.lifecycle.ViewModelProvider;
+package com.example.project.Main;
 
 import android.os.Bundle;
 
@@ -12,9 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.project.R;
 import com.example.project.databinding.FragmentChooseBinding;
-
-import java.sql.Time;
 
 public class ChooseFragment extends Fragment {
 

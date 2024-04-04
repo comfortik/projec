@@ -1,4 +1,6 @@
-package com.example.project;
+package com.example.project.Emotion;
+
+import com.example.project.Main.AddUserToFirebase;
 
 public class ReactForEmotions {
     public ReactForEmotions(){}

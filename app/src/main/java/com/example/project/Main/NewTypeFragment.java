@@ -1,6 +1,4 @@
-package com.example.project;
-
-import androidx.lifecycle.ViewModelProvider;
+package com.example.project.Main;
 
 import android.os.Bundle;
 
@@ -13,10 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.project.R;
 import com.example.project.databinding.FragmentNewTypeBinding;
 
 public class NewTypeFragment extends Fragment {
@@ -45,6 +42,7 @@ public class NewTypeFragment extends Fragment {
                         .commit();
             }
         });
+
 
         binding.etFragmentCreateType.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override

@@ -1,5 +1,6 @@
-package com.example.project;
+package com.example.project.Main;
 
+import com.example.project.Emotion.EmotionDiaryActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;

@@ -1,4 +1,4 @@
-package com.example.project;
+package com.example.project.Emotion;
 
 import static android.content.ContentValues.TAG;
 
@@ -8,13 +8,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.project.Main.FirestoreGetId;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
 public class FirestoreEmotion {
     FirebaseFirestore fb;

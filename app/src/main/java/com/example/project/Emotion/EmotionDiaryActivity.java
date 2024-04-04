@@ -1,4 +1,4 @@
-package com.example.project;
+package com.example.project.Emotion;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.project.Main.AddUserToFirebase;
 import com.example.project.databinding.ActivityEmotionDiaryBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

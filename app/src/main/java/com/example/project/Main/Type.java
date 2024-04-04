@@ -1,6 +1,4 @@
-package com.example.project;
-
-import android.util.Log;
+package com.example.project.Main;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 

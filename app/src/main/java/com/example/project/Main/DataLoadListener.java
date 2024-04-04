@@ -1,6 +1,6 @@
-package com.example.project;
+package com.example.project.Main;
 
-import java.util.List;
+import com.example.project.Main.CustomAdapter;
 
 
 public interface DataLoadListener {
