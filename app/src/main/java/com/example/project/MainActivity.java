@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements post {
     FirebaseAuth mAuth;
     FirestoreGetId firestoreGetId;
 
-    String userId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,31 +62,22 @@ public class MainActivity extends AppCompatActivity implements post {
         setContentView(binding.getRoot());
         fb = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+        AddUserToFirebase add= new AddUserToFirebase(this, fb, mAuth);
+        add.anonimouseSignUp();
         firestoreGetId = new FirestoreGetId(fb);
+        firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
+            fb.collection("Users")
+                    .document(userId)
+                    .collection("Types")
+                    .add(new Type("sosi", 5000));
+        });
+        getTypes();
+
+
         binding.btn.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, EmotionDiaryActivity.class);
             startActivity(intent);
         });
-
-        firestoreGetId = new FirestoreGetId(fb);
-        firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
-            if (userId != null) {
-                this.userId =userId;
-            } else {
-                Log.d(TAG, "Пользователь не найден по UID");
-            }
-        });
-
-        spisok = new Spisok(this , fb, mAuth.getCurrentUser());
-        getTypes();
-        AddUserToFirebase add= new AddUserToFirebase(this, fb, mAuth);
-        add.anonimouseSignUp();
-
-
-//        types = new ArrayList<>();
-//        types.add(new Type("Sleep", 6000, 5000));
-//        types.add(new Type("Study", 50000,5000));
-
 
         binding.btnTimer.setOnClickListener(v -> {
             countWork= 0;
@@ -119,6 +109,9 @@ public class MainActivity extends AppCompatActivity implements post {
 
             }
         });
+
+
+
         binding.btnTimerCancel.setOnClickListener(v -> {
             cancelButton=true;
             if(!currentType.isInterval()){
@@ -144,28 +137,31 @@ public class MainActivity extends AppCompatActivity implements post {
         });
     }
     private void loadTypeFromFirestore(String selectedType) {
-        fb.collection("Users")
-                .document(userId)
-                .collection("Types")
-                .whereEqualTo("name", selectedType) // Укажите значение, с которым сравнивать поле "name"
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            // Обработайте найденный документ
-                            Type type = documentSnapshot.toObject(Type.class);
-                            milliesec=type.getTimeWork();
-                            currentType=type;
+        firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId1 -> {
+            fb.collection("Users")
+                    .document(userId1)
+                    .collection("Types")
+                    .whereEqualTo("name", selectedType) // Укажите значение, с которым сравнивать поле "name"
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                // Обработайте найденный документ
+                                Type type = documentSnapshot.toObject(Type.class);
+                                milliesec=type.getTimeWork();
+                                currentType=type;
+                            }
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Обработка ошибки получения данных из Firestore
-                    }
-                });
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Обработка ошибки получения данных из Firestore
+                        }
+                    });
+        });
+
     }
 
 
@@ -217,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements post {
         binding.tvs.setText(name);
     }
     public void getTypes(){
+        spisok = new Spisok(this , fb, mAuth.getCurrentUser());
         spisok.createSpisok(new DataLoadListener() {
             @Override
             public void onDataLoaded(CustomAdapter adapter) {
@@ -229,29 +226,37 @@ public class MainActivity extends AppCompatActivity implements post {
         });
     }
     public void addTypes(String name, long timeWork, long timeRest){
-        fb.collection("Users")
-                .document(userId)
-                .collection("Types")
-                .add(new Type(name, timeWork,timeRest))
-                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentReference> task) {
-                        if(task.isSuccessful()) Toast.makeText(MainActivity.this, "assss", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId1 -> {
+            if(userId1!=null){
+                fb.collection("Users")
+                        .document(userId1)
+                        .collection("Types")
+                        .add(new Type(name, timeWork,timeRest))
+                        .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentReference> task) {
+                                if(task.isSuccessful()) Toast.makeText(MainActivity.this, "assss", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+        });
+
 
     }
     public void addTypes(String name, long timeWork){
-        fb.collection("Users")
-                .document(userId)
-                .collection("Types")
-                .add(new Type(name, timeWork))
-                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentReference> task) {
-                        if(task.isSuccessful()) Toast.makeText(MainActivity.this, "assss", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId1 -> {
+            fb.collection("Users")
+                    .document(userId1)
+                    .collection("Types")
+                    .add(new Type(name, timeWork))
+                    .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                            if(task.isSuccessful()) Toast.makeText(MainActivity.this, "assss", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        });
+
     }
 
     public void postpost(String name, long timeWork, long timeRest){
@@ -280,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements post {
     }
     public void finishTimer(){
         if(!currentType.isInterval()){
+            builder = new AlertDialog.Builder(this);
             long finishmillies= (milliesec-savemilliesec)/1000;
             long hour= finishmillies/3600;
             long minutes = (finishmillies-hour*3600)/60;
@@ -287,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements post {
             if(hour<=0&&minutes<=0){
                 builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+String.valueOf(sec)+" секунд");
             }
-            else if(hour<=0&&minutes>0){
+            else if(hour<=0&&minutes>=0){
                 builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+ String.valueOf(minutes)+" минут, "+String.valueOf(sec)+" секунд");
             }
             else if(hour>0&&minutes<=0){

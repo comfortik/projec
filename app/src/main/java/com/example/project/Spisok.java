@@ -1,8 +1,16 @@
 package com.example.project;
 import android.content.Context;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.ktx.Firebase;
 
 import java.util.List;
@@ -24,8 +32,6 @@ public class Spisok {
          this.user = user;
      }
 
-
-
     public void createSpisok(DataLoadListener listener) {
         firestoreGetId = new FirestoreGetId(fb);
         firestoreGetId.getId(user.getUid(), userId -> {
@@ -36,21 +42,38 @@ public class Spisok {
                         .get()
                         .addOnSuccessListener(documentSnapshot -> {
                             List<Type> types = documentSnapshot.toObjects(Type.class);
-                            typeInterval = new String[types.size() + 1];
-                            typeName = new String[types.size() + 1];
-                            for (int i = 0; i < types.size(); i++) {
-                                Type type = types.get(i);
-                                typeName[i] = type.getName();
-                                if (type.isInterval()) typeInterval[i] = "I";
-                                else typeInterval[i] = "N";
-                            }
-                            typeName[types.size()] = "Создать свой режим";
+                            if (types.size() == 0) {
+                                typeName = new String[1];
+                                typeName[0] = "Создать новый режим";
 
-                            CustomAdapter adapter = new CustomAdapter(context, typeName, typeInterval);
-                            listener.onDataLoaded(adapter);
+                                typeInterval = new String[1];
+                                typeInterval[0] = "N";
+
+                                CustomAdapter adapter = new CustomAdapter(context, typeName, typeInterval);
+                                listener.onDataLoaded(adapter);
+                            } else {
+                                typeInterval = new String[types.size() + 1];
+                                typeName = new String[types.size() + 1];
+                                for (int i = 0; i < types.size(); i++) {
+                                    Type type = types.get(i);
+                                    typeName[i] = type.getName();
+                                    if (type.isInterval()) typeInterval[i] = "I";
+                                    else typeInterval[i] = "N";
+                                }
+                                typeName[types.size()] = "Создать свой режим";
+
+                                CustomAdapter adapter = new CustomAdapter(context, typeName, typeInterval);
+                                listener.onDataLoaded(adapter);
+                            }
                         });
             } else {
-                listener.onDataLoaded(null); // обработка случая, когда userId равен null
+                // Если userId равен null, дать обратную связь через слушателя
+                typeName = new String[1];
+                typeName[0] = "Создать новый режим";
+
+
+                CustomAdapter adapter = new CustomAdapter(context, typeName, typeInterval);
+                listener.onDataLoaded(adapter);
             }
         });
     }
@@ -58,7 +81,5 @@ public class Spisok {
         types.add(newType);
         // Обновление списка после добавления нового элемента
     }
-    public void getTypes() {
 
-    }
 }

@@ -41,17 +41,14 @@ public class AddUserToFirebase {
         mAuth.signInAnonymously()
                 .addOnCompleteListener((Activity) context, task -> {
                     if (task.isSuccessful()) {
-                        Log.d(TAG, "signInAnonymously:success");
                         Toast.makeText(context, "Authentication success.", Toast.LENGTH_SHORT).show();
                         userExist();
                     } else {
-                        Log.w(TAG, "signInAnonymously:failure", task.getException());
                         Toast.makeText(context, "Authentication failed.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
     private void userExist() {
-
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
             fb.collection("Users")
@@ -69,6 +66,7 @@ public class AddUserToFirebase {
                             }
                         }
                     });
+
         } else {
             Toast.makeText(context, "Проблема с FirebaseUser", Toast.LENGTH_SHORT).show();
         }
@@ -83,15 +81,14 @@ public class AddUserToFirebase {
                 .add(userData)
                 .addOnSuccessListener(documentReference -> {
                     id = documentReference.getId();
-                    Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
                     Toast.makeText(context, "DocumentSnapshot added with ID: " + documentReference.getId(),
                             Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
-                    Log.w(TAG, "Error adding document", e);
                     Toast.makeText(context, "Error adding document",
                             Toast.LENGTH_SHORT).show();
                 });
+
     }
 
     public static class HelpEmotion {
