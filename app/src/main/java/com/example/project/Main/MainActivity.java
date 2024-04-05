@@ -4,20 +4,28 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.project.Emotion.EmotionDiaryActivity;
+import com.example.project.Emotion.EmotionDiaryFragment;
+import com.example.project.OnHideFragmentContainerListener;
+import com.example.project.Profile.ProfileFragment;
 import com.example.project.R;
+import com.example.project.Settings.SettingsFragment;
+import com.example.project.Sounds.SoundFragment;
 import com.example.project.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,7 +36,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements post {
+public class MainActivity extends AppCompatActivity implements post, OnHideFragmentContainerListener {
     long milliesec;
     long savemilliesec;
     boolean isRunning, cancelButton, porabotal;
@@ -55,19 +63,53 @@ public class MainActivity extends AppCompatActivity implements post {
         AddUserToFirebase add= new AddUserToFirebase(this, fb, mAuth);
         add.anonimouseSignUp();
         firestoreGetId = new FirestoreGetId(fb);
-        firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
-            fb.collection("Users")
-                    .document(userId)
-                    .collection("Types")
-                    .add(new Type("sosi", 5000));
-        });
+
         getTypes();
-
-
-        binding.btn.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, EmotionDiaryActivity.class);
-            startActivity(intent);
+        binding.bottomNavigationView.setSelectedItemId(R.id.bottom_timer);
+        binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                if (menuItem.getItemId() == R.id.bottom_settings) {
+                    SettingsFragment settingsFragment = new SettingsFragment();
+                    settingsFragment.setOnHideFragmentContainerListener(new OnHideFragmentContainerListener() {
+                        @Override
+                        public void onButtonTimerClick() {
+                            binding.bottomNavigationView.setVisibility(View.GONE);
+                        }
+                    });
+                    replaceFragment(new SettingsFragment());
+                } else if (menuItem.getItemId() == R.id.bottom_emotionDiary) {
+                    EmotionDiaryFragment emotionDiaryFragment = new EmotionDiaryFragment();
+                    emotionDiaryFragment.setOnHideFragmentContainerListener(new OnHideFragmentContainerListener() {
+                        @Override
+                        public void onButtonTimerClick() {
+                            binding.fragmentView.setVisibility(View.GONE);
+                        }
+                    });
+                    replaceFragment(new EmotionDiaryFragment());
+                } else if (menuItem.getItemId() == R.id.bottom_sound) {
+                    SoundFragment soundFragment= new SoundFragment();
+                    soundFragment.setOnHideFragmentContainerListener(new OnHideFragmentContainerListener() {
+                        @Override
+                        public void onButtonTimerClick() {
+                            binding.fragmentView.setVisibility(View.GONE);
+                        }
+                    });
+                    replaceFragment(new SoundFragment());
+                } else if (menuItem.getItemId() == R.id.bottom_profile) {
+                    ProfileFragment profileFragment = new ProfileFragment();
+                    profileFragment.setOnHideFragmentContainerListener(new OnHideFragmentContainerListener() {
+                        @Override
+                        public void onButtonTimerClick() {
+                            binding.fragmentView.setVisibility(View.GONE);
+                        }
+                    });
+                    replaceFragment(profileFragment);
+                }
+                return false;
+            }
         });
+
 
         binding.btnTimer.setOnClickListener(v -> {
             countWork= 0;
@@ -126,6 +168,13 @@ public class MainActivity extends AppCompatActivity implements post {
             }
         });
     }
+    private void replaceFragment(Fragment fragment){
+        binding.fragmentView.setVisibility(View.VISIBLE);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragmentView,fragment )
+                .commit();
+    }
     private void loadTypeFromFirestore(String selectedType) {
         firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId1 -> {
             fb.collection("Users")
@@ -153,6 +202,8 @@ public class MainActivity extends AppCompatActivity implements post {
         });
 
     }
+
+
 
 
 
@@ -319,6 +370,11 @@ public class MainActivity extends AppCompatActivity implements post {
                     .show();
         }
 
+    }
+
+    @Override
+    public void onButtonTimerClick() {
+        binding.fragmentView.setVisibility(View.GONE);
     }
 //    public void anonimouseSignUp() {
 //        mAuth.signInAnonymously()

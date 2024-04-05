@@ -8,10 +8,13 @@
     android:orientation="vertical"
     android:gravity="bottom"
     tools:context=".Main.MainActivity">
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn"/>
+    <FrameLayout
+        android:id="@+id/fragmentView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        />
+
     <TextView
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -27,12 +30,15 @@
         android:layout_height="wrap_content"
         android:hint="Режим"
         android:fontFamily="monospace"
-        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
-        <AutoCompleteTextView
-            android:id="@+id/fillied_exposed"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="none" />
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+            <AutoCompleteTextView
+                android:id="@+id/fillied_exposed"
+                android:layout_width="match_parent"
+                android:dropDownHeight="200dp"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+
+
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -87,6 +93,7 @@
 
     </LinearLayout>
     <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:menu="@menu/bottom_menu"
@@ -94,7 +101,7 @@
         app:itemIconSize="30dp"
         app:itemIconTint="@drawable/item_selector"
         app:itemRippleColor="@android:color/transparent"
-        app:labelVisibilityMode="unlabeled" />
+        app:labelVisibilityMode="unlabeled"/>
 
 
 

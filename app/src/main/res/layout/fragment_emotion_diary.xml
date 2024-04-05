@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Emotion.EmotionDiaryActivity">
+
+    <TextView
+        android:id="@+id/tvEmotionText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="monospace"
+        android:text="Как ты себя чувствуешь?"
+        android:layout_marginTop="100dp"
+        android:textSize="25sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/imgPloho"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@mipmap/ic_launcher_round"/>
+        <ImageButton
+            android:id="@+id/imgTakoe"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="10dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@mipmap/ic_launcher_round"/>
+        <ImageButton
+            android:id="@+id/imgNorm"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="10dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@mipmap/ic_launcher_round"/>
+        <ImageButton
+            android:id="@+id/imgWow"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="10dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@mipmap/ic_launcher_round"/>
+        <ImageButton
+            android:id="@+id/imgAhuenno"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="12dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@mipmap/ic_launcher_round"/>
+
+    </LinearLayout>
+    <TextView
+        android:id="@+id/tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:elevation="2dp"
+        app:itemIconSize="30dp"
+        app:itemIconTint="@drawable/item_selector"
+        app:itemRippleColor="@android:color/transparent"
+        app:labelVisibilityMode="unlabeled"
+        app:menu="@menu/bottom_menu" />
+
+
+</LinearLayout>
