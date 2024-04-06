@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.project.Main.DiaryEntry;
 import com.example.project.Main.FirestoreGetId;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -42,14 +43,14 @@ public class FirestoreEmotion {
 //                    }
 //                });
 //    }
-    public  void addEmotion(Emotion emotion){
+    public  void addEmotion(DiaryEntry diaryEntry){
         firestoreGetId = new FirestoreGetId(fb);
         firestoreGetId.getId(user.getUid(), userId -> {
             if (userId != null) {
                 fb.collection("Users")
                         .document(userId)
-                        .collection("Diary")
-                        .add(emotion)
+                        .collection("Entry")
+                        .add(diaryEntry)
                         .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentReference> task) {

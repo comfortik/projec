@@ -1,7 +1,48 @@
 package com.example.project.Main;
 
 public class FocusMode {
+    public boolean isInterval() {
+        return Interval;
+    }
 
+    boolean Interval;
+
+
+    public String getName() {
+        return name;
+    }
+
+    public long getHour() {
+        return hour;
+    }
+
+    public long getMinutes() {
+        return minutes;
+    }
+
+    public long getSec() {
+        return sec;
+    }
+
+    public long getHourRest() {
+        return hourRest;
+    }
+
+    public long getMinutesRest() {
+        return minutesRest;
+    }
+
+    public long getSecRest() {
+        return secRest;
+    }
+
+    public int getCountWork() {
+        return countWork;
+    }
+
+    public int getCountRest() {
+        return countRest;
+    }
 
     String name;
     long hour;

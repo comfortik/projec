@@ -52,17 +52,15 @@ public class Spisok {
                                     else typeInterval[i] = "N";
                                 }
                                 typeName[types.size()] = "Создать свой режим";
-
+                                typeInterval[types.size()]="a";
                                 CustomAdapter adapter = new CustomAdapter(context, typeName, typeInterval);
                                 listener.onDataLoaded(adapter);
                             }
                         });
             } else {
-                // Если userId равен null, дать обратную связь через слушателя
                 typeName = new String[1];
                 typeName[0] = "Создать новый режим";
-
-
+                typeInterval[0] = "a";
                 CustomAdapter adapter = new CustomAdapter(context, typeName, typeInterval);
                 listener.onDataLoaded(adapter);
             }

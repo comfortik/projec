@@ -37,7 +37,6 @@
             <AutoCompleteTextView
                 android:id="@+id/fillied_exposed"
                 android:layout_width="match_parent"
-                android:dropDownHeight="200dp"
                 android:layout_height="wrap_content"
                 android:inputType="none" />
 

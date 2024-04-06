@@ -5,6 +5,8 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.example.project.Main.AddUserToFirebase;
+import com.example.project.Main.DiaryEntry;
+import com.example.project.Main.FocusMode;
 import com.example.project.Main.MainActivity;
 import com.example.project.databinding.ActivityEmotionDiaryBinding;
 import com.example.project.databinding.FragmentEmotionDiaryBinding;
@@ -24,32 +26,37 @@ public class EmotionUtils {
     }
 
 
-    public  void setListeners(Context context, FragmentEmotionDiaryBinding binding) {
+    public  void setListeners(Context context, FragmentEmotionDiaryBinding binding, FocusMode focusMode) {
+
         binding.imgPloho.setOnClickListener(v -> {
             Emotion emotion = new Emotion(1);
-            emotionBtns(context, binding, emotion);
+            emotionBtns(context, binding, emotion, focusMode);
         });
         binding.imgTakoe.setOnClickListener(v -> {
             Emotion emotion= new Emotion(2);
-            emotionBtns(context, binding, emotion);
+            emotionBtns(context, binding, emotion, focusMode);
         });
         binding.imgNorm.setOnClickListener(v -> {
             Emotion emotion= new Emotion(3);
-            emotionBtns(context, binding, emotion);
+            emotionBtns(context, binding, emotion, focusMode);
         });
         binding.imgWow.setOnClickListener(v -> {
             Emotion emotion= new Emotion(4);
-            emotionBtns(context, binding, emotion);
+            emotionBtns(context, binding, emotion, focusMode);
         });
         binding.imgAhuenno.setOnClickListener(v -> {
             Emotion emotion= new Emotion(5);
-            emotionBtns(context, binding, emotion);
+            emotionBtns(context, binding, emotion, focusMode);
         });
     }
 
-    public  void emotionBtns(Context context, FragmentEmotionDiaryBinding binding, Emotion emotion) {
+    public  void emotionBtns(Context context, FragmentEmotionDiaryBinding binding, Emotion emotion, FocusMode focusMode) {
+        if(focusMode!=null){
+            DiaryEntry diaryEntry = new DiaryEntry(focusMode, emotion);
+            firestoreEmotion.addEmotion(diaryEntry);
+        }
 
-        firestoreEmotion.addEmotion(emotion);
+
         int emotionId = emotion.getId();
         switch (emotionId){
             case 1:

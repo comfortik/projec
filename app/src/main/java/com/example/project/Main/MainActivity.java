@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.project.Emotion.EmotionDiaryFragment;
 import com.example.project.Emotion.EmotionUtils;
 import com.example.project.Emotion.FirestoreEmotion;
+import com.example.project.Emotion.OnAddUserToFirestore;
 import com.example.project.Emotion.OnCloseDialogEmotionListener;
 import com.example.project.Emotion.ReactForEmotions;
 import com.example.project.OnHideFragmentContainerListener;
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     FirebaseFirestore fb;
     FirebaseAuth mAuth;
     FirestoreGetId firestoreGetId;
+    AddUserToFirebase add;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,16 +70,18 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         setContentView(binding.getRoot());
         fb = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        AddUserToFirebase add= new AddUserToFirebase(this, fb, mAuth);
+         add= new AddUserToFirebase(this, fb, mAuth);
         add.anonimouseSignUp();
         firestoreGetId = new FirestoreGetId(fb);
-        binding.btn.setOnClickListener(new View.OnClickListener() {
+        add.setOnAddUserToFirestore(new OnAddUserToFirestore() {
             @Override
-            public void onClick(View v) {
-                getBuilder();
+            public void addUser() {
+                getTypes();
             }
         });
-        getTypes();
+//        getTypes();
+
+
         binding.bottomNavigationView.setSelectedItemId(R.id.bottom_timer);
         binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -271,6 +275,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         spisok.createSpisok(new DataLoadListener() {
             @Override
             public void onDataLoaded(CustomAdapter adapter) {
+
                 if (adapter != null) {
                     binding.filliedExposed.setAdapter(adapter);
                 } else {
@@ -290,6 +295,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                             @Override
                             public void onComplete(@NonNull Task<DocumentReference> task) {
                                 if(task.isSuccessful()) Toast.makeText(MainActivity.this, "assss", Toast.LENGTH_SHORT).show();
+
                             }
                         });
             }
@@ -345,7 +351,8 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             long minutes = (finishmillies-hour*3600)/60;
             long sec= (finishmillies-hour*3600-minutes*60);
             FocusMode focusMode = new FocusMode(currentType.getName(), hour, minutes, sec );
-
+            alertDialogEmotion(focusMode);
+            Toast.makeText(this, focusMode.getName(), Toast.LENGTH_SHORT).show();
 //            if(hour<=0&&minutes<=0){
 //                builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+String.valueOf(sec)+" секунд");
 //            }
@@ -388,7 +395,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
 
     }
 
-    private void getBuilder(){
+    private void alertDialogEmotion(FocusMode focusMode){
         AlertDialog dialog;
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         FragmentEmotionDiaryBinding binding1 = FragmentEmotionDiaryBinding.inflate(getLayoutInflater(), null, false);
@@ -396,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         ReactForEmotions reactForEmotions = new ReactForEmotions();
         FirestoreEmotion firestoreEmotion = new FirestoreEmotion(this, fb, mAuth.getCurrentUser());
         EmotionUtils emotionUtils = new EmotionUtils(firestoreEmotion, reactForEmotions);
-        emotionUtils.setListeners(this, binding1);
+        emotionUtils.setListeners(this, binding1, focusMode);
         dialog = builder1.setView(view).show();
 
         emotionUtils.setOnCloseDialogEmotionListener(new OnCloseDialogEmotionListener() {
@@ -404,9 +411,23 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             @Override
             public void onHideDialog() {
                 dialog.cancel();
+                firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
+                    fb.collection("Users")
+                            .document(userId)
+                            .collection("Entry")
+                            .add(focusMode)
+                            .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentReference> task) {
+                                    if(task.isSuccessful())Toast.makeText(MainActivity.this, "Запись в дневник добавлена", Toast.LENGTH_SHORT);
+                                    else Toast.makeText(MainActivity.this, "Не получилось добавить запись в дневник", Toast.LENGTH_SHORT);
+                                }
+                            });
+                });
             }
         });
     }
+
 
     @Override
     public void onButtonTimerClick() {

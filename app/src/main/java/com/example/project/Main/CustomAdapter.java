@@ -21,8 +21,13 @@ public class CustomAdapter extends ArrayAdapter<String> {
     public String[] intervals;
     public CustomAdapter(Context context, String[] items, String[] intervals) {
         super(context, R.layout.drop_down_item, items);
-        this.items = items;
-        this.intervals = intervals;
+        if (items != null && intervals != null && items.length == intervals.length) {
+            this.items = items;
+            this.intervals = intervals;
+        } else  {
+            this.items = new String[1];
+            this.intervals = new String[1];
+        }
     }
 
     @NonNull
@@ -31,8 +36,10 @@ public class CustomAdapter extends ArrayAdapter<String> {
         if(convertView==null){
             convertView= LayoutInflater.from(getContext()).inflate(R.layout.drop_down_item, parent, false);
         }
+
         TextView mainText = convertView.findViewById(R.id.mainText);
         TextView sideSimbol = convertView.findViewById(R.id.sideSymbol);
+
         mainText.setText(items[position]);
         sideSimbol.setText(intervals[position]);
         return convertView;

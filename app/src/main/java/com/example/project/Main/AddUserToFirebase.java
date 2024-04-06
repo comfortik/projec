@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.project.Emotion.OnAddUserToFirestore;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,6 +24,7 @@ public class AddUserToFirebase {
     FirebaseFirestore fb;
     FirebaseAuth mAuth;
     Context context;
+    OnAddUserToFirestore onAddUserToFirestore;
 
 
 
@@ -63,6 +65,7 @@ public class AddUserToFirebase {
                             } else {
                                 Toast.makeText(context, "Нет файлика, создаем новый!", Toast.LENGTH_SHORT).show();
                                 addUser();
+
                             }
                         }
                     });
@@ -83,12 +86,18 @@ public class AddUserToFirebase {
                     id = documentReference.getId();
                     Toast.makeText(context, "DocumentSnapshot added with ID: " + documentReference.getId(),
                             Toast.LENGTH_SHORT).show();
+                    onAddUserToFirestore.addUser();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(context, "Error adding document",
                             Toast.LENGTH_SHORT).show();
                 });
 
+
+    }
+
+    public void setOnAddUserToFirestore(OnAddUserToFirestore onAddUserToFirestore) {
+        this.onAddUserToFirestore = onAddUserToFirestore;
     }
 
     public static class HelpEmotion {
