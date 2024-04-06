@@ -20,6 +20,7 @@ import com.example.project.R;
 import com.example.project.ReplaceFragment;
 import com.example.project.Settings.SettingsFragment;
 import com.example.project.Sounds.SoundFragment;
+
 import com.example.project.databinding.FragmentProfileBinding;
 import com.google.android.material.navigation.NavigationBarView;
 

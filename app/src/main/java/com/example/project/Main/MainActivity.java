@@ -1,11 +1,13 @@
 package com.example.project.Main;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,12 +17,18 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.project.Emotion.EmotionDiaryFragment;
+import com.example.project.Emotion.EmotionUtils;
+import com.example.project.Emotion.FirestoreEmotion;
+import com.example.project.Emotion.OnCloseDialogEmotionListener;
+import com.example.project.Emotion.ReactForEmotions;
 import com.example.project.OnHideFragmentContainerListener;
 import com.example.project.Profile.ProfileFragment;
 import com.example.project.R;
 import com.example.project.Settings.SettingsFragment;
 import com.example.project.Sounds.SoundFragment;
+import com.example.project.databinding.ActivityEmotionDiaryBinding;
 import com.example.project.databinding.ActivityMainBinding;
+import com.example.project.databinding.FragmentEmotionDiaryBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -63,7 +71,12 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         AddUserToFirebase add= new AddUserToFirebase(this, fb, mAuth);
         add.anonimouseSignUp();
         firestoreGetId = new FirestoreGetId(fb);
-
+        binding.btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getBuilder();
+            }
+        });
         getTypes();
         binding.bottomNavigationView.setSelectedItemId(R.id.bottom_timer);
         binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -331,21 +344,23 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             long hour= finishmillies/3600;
             long minutes = (finishmillies-hour*3600)/60;
             long sec= (finishmillies-hour*3600-minutes*60);
-            if(hour<=0&&minutes<=0){
-                builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+String.valueOf(sec)+" секунд");
-            }
-            else if(hour<=0&&minutes>=0){
-                builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+ String.valueOf(minutes)+" минут, "+String.valueOf(sec)+" секунд");
-            }
-            else if(hour>0&&minutes<=0){
-                builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+String.valueOf(hour)+" часов, "+String.valueOf(sec)+" секунд");
-            }
-            else{
-                builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+String.valueOf(hour)+" часов, "+ String.valueOf(minutes)+" минут, "+String.valueOf(sec)+" секунд");
-            }
-            builder.setTitle("Конец")
-                    .setPositiveButton("ok", (dialog, which) -> dialog.cancel())
-                    .show();
+            FocusMode focusMode = new FocusMode(currentType.getName(), hour, minutes, sec );
+
+//            if(hour<=0&&minutes<=0){
+//                builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+String.valueOf(sec)+" секунд");
+//            }
+//            else if(hour<=0&&minutes>=0){
+//                builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+ String.valueOf(minutes)+" минут, "+String.valueOf(sec)+" секунд");
+//            }
+//            else if(hour>0&&minutes<=0){
+//                builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+String.valueOf(hour)+" часов, "+String.valueOf(sec)+" секунд");
+//            }
+//            else{
+//                builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+String.valueOf(hour)+" часов, "+ String.valueOf(minutes)+" минут, "+String.valueOf(sec)+" секунд");
+//            }
+//            builder.setTitle("Конец")
+//                    .setPositiveButton("ok", (dialog, which) -> dialog.cancel())
+//                    .show();
         }
         else {
             long workTime=0;
@@ -364,18 +379,43 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             long hoursRest= restTime/3600;
             long minutesRest = (restTime-hours*3600)/60;
             long secRest = (restTime-hours*3600-minutes*60);
-            builder.setTitle("Количество интервалов отдыха: " +countRest+" Количество интервалов работы: " +countWork)
-                    .setMessage("Время в работе: "+  " : "+ hours+" : " + minutes+" : "+ sec+"\n"+"Время в отдыхе: "+  " : "+ hoursRest+" : " + minutesRest+" : "+ secRest)
-                    .setPositiveButton("ok", (dialog, which) -> dialog.cancel())
-                    .show();
+            FocusMode focusMode = new FocusMode(currentType.getName(), hours, minutes, sec, hoursRest, minutesRest, secRest, countWork, countRest);
+            builder.setTitle("Количество интервалов отдыха: " +countRest+" Количество интервалов работы: " +countWork);
+//                    .setMessage("Время в работе: "+  " : "+ hours+" : " + minutes+" : "+ sec+"\n"+"Время в отдыхе: "+  " : "+ hoursRest+" : " + minutesRest+" : "+ secRest)
+//                    .setPositiveButton("ok", (dialog, which) -> dialog.cancel())
+//                    .show();
         }
 
+    }
+
+    private void getBuilder(){
+        AlertDialog dialog;
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+        FragmentEmotionDiaryBinding binding1 = FragmentEmotionDiaryBinding.inflate(getLayoutInflater(), null, false);
+        View view = binding1.getRoot();
+        ReactForEmotions reactForEmotions = new ReactForEmotions();
+        FirestoreEmotion firestoreEmotion = new FirestoreEmotion(this, fb, mAuth.getCurrentUser());
+        EmotionUtils emotionUtils = new EmotionUtils(firestoreEmotion, reactForEmotions);
+        emotionUtils.setListeners(this, binding1);
+        dialog = builder1.setView(view).show();
+
+        emotionUtils.setOnCloseDialogEmotionListener(new OnCloseDialogEmotionListener() {
+
+            @Override
+            public void onHideDialog() {
+                dialog.cancel();
+            }
+        });
     }
 
     @Override
     public void onButtonTimerClick() {
         binding.fragmentView.setVisibility(View.GONE);
     }
+
+
+
+
 //    public void anonimouseSignUp() {
 //        mAuth.signInAnonymously()
 //                .addOnCompleteListener(MainActivity.this, task -> {

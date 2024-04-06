@@ -55,30 +55,12 @@ public class EmotionDiaryFragment extends Fragment {
         user = mAuth.getCurrentUser();
         reactForEmotions = new ReactForEmotions();
         firestoreEmotion = new FirestoreEmotion(getActivity(), fb, user);
-
-        binding.imgPloho.setOnClickListener(v -> {
-            Emotion emotion= new Emotion(1);
-            emotionBtns(emotion);
-        });
-        binding.imgTakoe.setOnClickListener(v -> {
-            Emotion emotion= new Emotion(2);
-            emotionBtns(emotion);
-        });
-        binding.imgNorm.setOnClickListener(v -> {
-            Emotion emotion= new Emotion(3);
-            emotionBtns(emotion);
-        });
-        binding.imgWow.setOnClickListener(v -> {
-            Emotion emotion= new Emotion(4);
-            emotionBtns(emotion);
-        });
-        binding.imgAhuenno.setOnClickListener(v -> {
-            Emotion emotion= new Emotion(5);
-            emotionBtns(emotion);
-        });
+        EmotionUtils emotionUtils = new EmotionUtils(firestoreEmotion, reactForEmotions);
+        emotionUtils.setListeners(getActivity(), binding);
         ReplaceFragment replaceFragment = new ReplaceFragment();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         binding.bottomNavigationView.setSelectedItemId(R.id.bottom_emotionDiary);
+
         binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -102,6 +84,28 @@ public class EmotionDiaryFragment extends Fragment {
 
 
         return view ;
+    }
+    public void setListeners(){
+        binding.imgPloho.setOnClickListener(v -> {
+            Emotion emotion= new Emotion(1);
+            emotionBtns(emotion);
+        });
+        binding.imgTakoe.setOnClickListener(v -> {
+            Emotion emotion= new Emotion(2);
+            emotionBtns(emotion);
+        });
+        binding.imgNorm.setOnClickListener(v -> {
+            Emotion emotion= new Emotion(3);
+            emotionBtns(emotion);
+        });
+        binding.imgWow.setOnClickListener(v -> {
+            Emotion emotion= new Emotion(4);
+            emotionBtns(emotion);
+        });
+        binding.imgAhuenno.setOnClickListener(v -> {
+            Emotion emotion= new Emotion(5);
+            emotionBtns(emotion);
+        });
     }
     public void emotionBtns(Emotion emotion){
 //        addEmotion();

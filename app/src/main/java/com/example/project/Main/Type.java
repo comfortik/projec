@@ -5,8 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.List;
 
 public class Type {
-        String name;
-        List<Type> types;
+        private String name;
         long timeWork, timeRest;
         boolean interval;
         FirebaseFirestore fb;
