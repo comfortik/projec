@@ -4,5 +4,5 @@ import android.app.Dialog;
 
 public interface OnCloseDialogEmotionListener {
 
-    void onHideDialog();
+    void onHideDialog(Emotion emotion);
 }

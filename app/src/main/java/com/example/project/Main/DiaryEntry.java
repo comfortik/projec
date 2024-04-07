@@ -13,6 +13,8 @@ public class DiaryEntry {
 
     FocusMode focusMode;
 
+
+
     public Note getNote() {
         return note;
     }
@@ -44,6 +46,15 @@ public class DiaryEntry {
         this.focusMode = focusMode;
         this.emotion = emotion;
     }
+    public DiaryEntry (Emotion emotion){
+        this.emotion = emotion;
+    }
+    public DiaryEntry(Note note,  Emotion emotion) {
+        this.note = note;
+        this.emotion = emotion;
+    }
+
+
 
 
     public DiaryEntry() {

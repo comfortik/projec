@@ -61,7 +61,7 @@ public class AddUserToFirebase {
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful() && !task.getResult().isEmpty()) {
                                 Toast.makeText(context, "Файлик имеется", Toast.LENGTH_SHORT).show();
-
+                                onAddUserToFirestore.addUser();
                             } else {
                                 Toast.makeText(context, "Нет файлика, создаем новый!", Toast.LENGTH_SHORT).show();
                                 addUser();

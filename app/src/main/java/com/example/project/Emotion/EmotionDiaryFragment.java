@@ -18,7 +18,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.project.Main.AddUserToFirebase;
+import com.example.project.Main.DiaryEntry;
+import com.example.project.Main.FirestoreGetId;
 import com.example.project.OnHideFragmentContainerListener;
+import com.example.project.OnNote;
 import com.example.project.Profile.ProfileFragment;
 import com.example.project.R;
 import com.example.project.ReplaceFragment;
@@ -39,6 +42,7 @@ public class EmotionDiaryFragment extends Fragment {
     FirebaseAuth mAuth;
     FirebaseUser user;
     AlertDialog.Builder builder;
+
     ReactForEmotions reactForEmotions;
     FirestoreEmotion firestoreEmotion;
     public static EmotionDiaryFragment newInstance() {
@@ -54,12 +58,25 @@ public class EmotionDiaryFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         reactForEmotions = new ReactForEmotions();
+        FirestoreGetId firestoreGetId = new FirestoreGetId(fb);
         firestoreEmotion = new FirestoreEmotion(getActivity(), fb, user);
         EmotionUtils emotionUtils = new EmotionUtils(firestoreEmotion, reactForEmotions);
         emotionUtils.setListeners(getActivity(), binding, null);
         ReplaceFragment replaceFragment = new ReplaceFragment();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         binding.bottomNavigationView.setSelectedItemId(R.id.bottom_emotionDiary);
+        emotionUtils.setOnNote(new OnNote() {
+            @Override
+            public void onNote(Emotion emotion) {
+                emotionUtils.alertNote(getActivity(), getActivity().getLayoutInflater(), fb, mAuth, null, emotion);
+            }
+        });
+        emotionUtils.setOnCloseDialogEmotionListener(new OnCloseDialogEmotionListener() {
+            @Override
+            public void onHideDialog(Emotion emotion) {
+                emotionUtils.alertEmotion(fb, mAuth, null, emotion);
+            }
+        });
 
         binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -85,6 +102,11 @@ public class EmotionDiaryFragment extends Fragment {
 
         return view ;
     }
+
+
+
+
+
 //    public void setListeners(){
 //        binding.imgPloho.setOnClickListener(v -> {
 //            Emotion emotion= new Emotion(1);
@@ -160,5 +182,7 @@ public class EmotionDiaryFragment extends Fragment {
     public void setOnHideFragmentContainerListener(OnHideFragmentContainerListener onHideFragmentContainerListener){
         this.onHideFragmentContainerListener= onHideFragmentContainerListener;
     }
+
+
 
 }

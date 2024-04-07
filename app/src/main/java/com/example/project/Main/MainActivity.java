@@ -2,6 +2,7 @@ package com.example.project.Main;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -16,19 +17,23 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.project.Emotion.Emotion;
 import com.example.project.Emotion.EmotionDiaryFragment;
 import com.example.project.Emotion.EmotionUtils;
 import com.example.project.Emotion.FirestoreEmotion;
 import com.example.project.Emotion.OnAddUserToFirestore;
 import com.example.project.Emotion.OnCloseDialogEmotionListener;
 import com.example.project.Emotion.ReactForEmotions;
+import com.example.project.Note.Note;
 import com.example.project.OnHideFragmentContainerListener;
+import com.example.project.OnNote;
 import com.example.project.Profile.ProfileFragment;
 import com.example.project.R;
 import com.example.project.Settings.SettingsFragment;
 import com.example.project.Sounds.SoundFragment;
 import com.example.project.databinding.ActivityEmotionDiaryBinding;
 import com.example.project.databinding.ActivityMainBinding;
+import com.example.project.databinding.AlertNoteBinding;
 import com.example.project.databinding.FragmentEmotionDiaryBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -62,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     FirebaseAuth mAuth;
     FirestoreGetId firestoreGetId;
     AddUserToFirebase add;
+    EmotionUtils emotionUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -343,6 +349,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 })
                 .show();
     }
+
     public void finishTimer(){
         if(!currentType.isInterval()){
             builder = new AlertDialog.Builder(this);
@@ -400,6 +407,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         FragmentEmotionDiaryBinding binding1 = FragmentEmotionDiaryBinding.inflate(getLayoutInflater(), null, false);
         View view = binding1.getRoot();
+        binding1.bottomNavigationView.setVisibility(View.GONE);
         ReactForEmotions reactForEmotions = new ReactForEmotions();
         FirestoreEmotion firestoreEmotion = new FirestoreEmotion(this, fb, mAuth.getCurrentUser());
         EmotionUtils emotionUtils = new EmotionUtils(firestoreEmotion, reactForEmotions);
@@ -409,24 +417,35 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         emotionUtils.setOnCloseDialogEmotionListener(new OnCloseDialogEmotionListener() {
 
             @Override
-            public void onHideDialog() {
+            public void onHideDialog(Emotion emotion) {
+                emotionUtils.alertEmotion(fb, mAuth, focusMode, emotion);
                 dialog.cancel();
-                firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
-                    fb.collection("Users")
-                            .document(userId)
-                            .collection("Entry")
-                            .add(focusMode)
-                            .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentReference> task) {
-                                    if(task.isSuccessful())Toast.makeText(MainActivity.this, "Запись в дневник добавлена", Toast.LENGTH_SHORT);
-                                    else Toast.makeText(MainActivity.this, "Не получилось добавить запись в дневник", Toast.LENGTH_SHORT);
-                                }
-                            });
-                });
+//                firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
+//                    fb.collection("Users")
+//                            .document(userId)
+//                            .collection("Entry")
+//                            .add(diaryEntry)
+//                            .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<DocumentReference> task) {
+//                                    if(task.isSuccessful())Toast.makeText(MainActivity.this, "Запись в дневник добавлена", Toast.LENGTH_SHORT);
+//                                    else Toast.makeText(MainActivity.this, "Не получилось добавить запись в дневник", Toast.LENGTH_SHORT);
+//                                }
+//                            });
+//                });
             }
         });
+        emotionUtils.setOnNote(new OnNote() {
+            @Override
+            public void onNote(Emotion emotion)
+            {
+                dialog.cancel();
+                emotionUtils.alertNote(MainActivity.this, getLayoutInflater(), fb, mAuth, focusMode, emotion);
+            }
+        });
+
     }
+
 
 
     @Override
@@ -435,65 +454,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     }
 
 
-
-
-//    public void anonimouseSignUp() {
-//        mAuth.signInAnonymously()
-//                .addOnCompleteListener(MainActivity.this, task -> {
-//                    if (task.isSuccessful()) {
-//                        Log.d(TAG, "signInAnonymously:success");
-//                        Toast.makeText(MainActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
-//                        userExist();
-//                    } else {
-//                        Log.w(TAG, "signInAnonymously:failure", task.getException());
-//                        Toast.makeText(MainActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//    }
-//
-//
-//
-//    public void addUser() {
-//        FirebaseUser user = mAuth.getCurrentUser();
-//        String uid = user.getUid().toString();
-//
-//        Map<String, Object> userData = new HashMap<>();
-//        userData.put("uid", uid);
-//        fb.collection("Users")
-//                .add(userData)
-//                .addOnSuccessListener(documentReference -> {
-//                    Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-//                    Toast.makeText(MainActivity.this, "DocumentSnapshot added with ID: " + documentReference.getId(),
-//                            Toast.LENGTH_SHORT).show();
-//                })
-//                .addOnFailureListener(e -> {
-//                    Log.w(TAG, "Error adding document", e);
-//                    Toast.makeText(MainActivity.this, "Error adding document",
-//                            Toast.LENGTH_SHORT).show();
-//                });
-//    }
-//
-//    public void userExist() {
-//        FirebaseUser user = mAuth.getCurrentUser();
-//        if (user != null) {
-//            fb.collection("Users")
-//                    .whereEqualTo("uid", user.getUid())
-//                    .get()
-//                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                            if (task.isSuccessful() && !task.getResult().isEmpty()) {
-//                                Toast.makeText(MainActivity.this, "Файлик имеется", Toast.LENGTH_SHORT).show();
-//                            } else {
-//                                Toast.makeText(MainActivity.this, "Нет файлика, создаем новый!", Toast.LENGTH_SHORT).show();
-//                                addUser();
-//                            }
-//                        }
-//                    });
-//        } else {
-//            Toast.makeText(MainActivity.this, "Проблема с FirebaseUser", Toast.LENGTH_SHORT).show();
-//        }
-//    }
 
 }
 
