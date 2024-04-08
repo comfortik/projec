@@ -3,6 +3,9 @@ package com.example.project.Emotion;
 public class Emotion {
     boolean posleFocus;
 
+    public Emotion() {
+    }
+
     public int getId() {
         return id;
     }

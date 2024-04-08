@@ -2,6 +2,7 @@ package com.example.project.Emotion;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
@@ -24,6 +25,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class EmotionUtils {
      FirestoreEmotion firestoreEmotion;
@@ -104,7 +108,7 @@ public class EmotionUtils {
                 .show();
 
     }
-    public void alertEmotion( FirebaseFirestore fb, FirebaseAuth mAuth, FocusMode focusMode, Emotion emotion){
+    public void alertEmotion(FirebaseFirestore fb, FirebaseAuth mAuth, FocusMode focusMode, Emotion emotion){
         FirestoreGetId  firestoreGetId = new FirestoreGetId(fb);
         if(focusMode!=null){
             diaryEntry = new DiaryEntry( focusMode,  emotion);

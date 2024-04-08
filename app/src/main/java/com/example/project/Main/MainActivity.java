@@ -393,7 +393,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             long hoursRest= restTime/3600;
             long minutesRest = (restTime-hours*3600)/60;
             long secRest = (restTime-hours*3600-minutes*60);
-            FocusMode focusMode = new FocusMode(currentType.getName(), hours, minutes, sec, hoursRest, minutesRest, secRest, countWork, countRest);
             builder.setTitle("Количество интервалов отдыха: " +countRest+" Количество интервалов работы: " +countWork);
 //                    .setMessage("Время в работе: "+  " : "+ hours+" : " + minutes+" : "+ sec+"\n"+"Время в отдыхе: "+  " : "+ hoursRest+" : " + minutesRest+" : "+ secRest)
 //                    .setPositiveButton("ok", (dialog, which) -> dialog.cancel())

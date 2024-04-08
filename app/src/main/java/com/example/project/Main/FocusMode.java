@@ -1,6 +1,12 @@
 package com.example.project.Main;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 public class FocusMode {
+    public FocusMode() {
+    }
+
     public boolean isInterval() {
         return Interval;
     }
@@ -73,4 +79,15 @@ public class FocusMode {
         this.countWork = countWork;
         this.countRest = countRest;
     }
+    public String getTime(){
+        NumberFormat f = new DecimalFormat("00");
+        String time= ("Время фокусировки: "+f.format(hour) + ":" + f.format(minutes) + ":" + f.format(sec));
+        return time;
+    }
+    public String getTimeInterval(){
+        NumberFormat f = new DecimalFormat("00");
+        String time= ("Время фокусировки: "+f.format(hour) + ":" + f.format(minutes) + ":" + f.format(sec)+"  Время отдыха: "+f.format(hourRest) + ":" + f.format(minutesRest) + ":" + f.format(secRest));
+        return time;
+    }
+
 }
