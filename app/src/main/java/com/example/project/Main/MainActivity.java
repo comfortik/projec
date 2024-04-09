@@ -82,6 +82,20 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         add.setOnAddUserToFirestore(new OnAddUserToFirestore() {
             @Override
             public void addUser() {
+//                firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
+//                    fb.collection("Users")
+//                            .document(userId)
+//                            .collection("Types")
+//                            .add(new Type("aa", 5000,3000));
+//                });
+//                firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
+//                    fb.collection("Users")
+//                            .document(userId)
+//                            .collection("Types")
+//                            .add(new Type("adasd", 5000));
+//                });
+
+
                 getTypes();
             }
         });
@@ -161,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 Toast.makeText(MainActivity.this, binding.filliedExposed.getText().toString(),Toast.LENGTH_SHORT).show();
                 String selectedTypeName = parent.getItemAtPosition(position).toString();
                 loadTypeFromFirestore(selectedTypeName);
-
             }
         });
 
@@ -171,12 +184,12 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             cancelButton=true;
             if(!currentType.isInterval()){
                 countDownTimer.cancel();
-                AlertDilaog();
+                finishTimer();
             }
             else{
                 countDownTimer.cancel();
                 binding.tvs.setText((countRest+" "+countWork).toString());
-                AlertDilaog();
+                finishTimer();
             }
         });
         binding.btnTimerPause.setOnClickListener(v -> {
@@ -209,7 +222,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                             for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                // Обработайте найденный документ
                                 Type type = documentSnapshot.toObject(Type.class);
                                 milliesec=type.getTimeWork();
                                 currentType=type;
@@ -359,22 +371,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             long sec= (finishmillies-hour*3600-minutes*60);
             FocusMode focusMode = new FocusMode(currentType.getName(), hour, minutes, sec );
             alertDialogEmotion(focusMode);
-            Toast.makeText(this, focusMode.getName(), Toast.LENGTH_SHORT).show();
-//            if(hour<=0&&minutes<=0){
-//                builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+String.valueOf(sec)+" секунд");
-//            }
-//            else if(hour<=0&&minutes>=0){
-//                builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+ String.valueOf(minutes)+" минут, "+String.valueOf(sec)+" секунд");
-//            }
-//            else if(hour>0&&minutes<=0){
-//                builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+String.valueOf(hour)+" часов, "+String.valueOf(sec)+" секунд");
-//            }
-//            else{
-//                builder.setMessage("Конец фокусировки "+"\n"+"Время фокусировки: "+String.valueOf(hour)+" часов, "+ String.valueOf(minutes)+" минут, "+String.valueOf(sec)+" секунд");
-//            }
-//            builder.setTitle("Конец")
-//                    .setPositiveButton("ok", (dialog, which) -> dialog.cancel())
-//                    .show();
         }
         else {
             long workTime=0;
@@ -393,10 +389,8 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             long hoursRest= restTime/3600;
             long minutesRest = (restTime-hours*3600)/60;
             long secRest = (restTime-hours*3600-minutes*60);
-            builder.setTitle("Количество интервалов отдыха: " +countRest+" Количество интервалов работы: " +countWork);
-//                    .setMessage("Время в работе: "+  " : "+ hours+" : " + minutes+" : "+ sec+"\n"+"Время в отдыхе: "+  " : "+ hoursRest+" : " + minutesRest+" : "+ secRest)
-//                    .setPositiveButton("ok", (dialog, which) -> dialog.cancel())
-//                    .show();
+            FocusMode focusMode = new FocusMode(currentType.getName(), hours, minutes, sec,hoursRest,minutesRest,secRest,countWork,countRest );
+            alertDialogEmotion(focusMode);
         }
 
     }
@@ -452,8 +446,12 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         binding.fragmentView.setVisibility(View.GONE);
     }
 
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SoundFragment soundFragment = new SoundFragment();
+        soundFragment.stopMedia();
+    }
 }
 
 

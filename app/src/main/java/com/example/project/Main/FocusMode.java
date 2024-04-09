@@ -86,7 +86,7 @@ public class FocusMode {
     }
     public String getTimeInterval(){
         NumberFormat f = new DecimalFormat("00");
-        String time= ("Время фокусировки: "+f.format(hour) + ":" + f.format(minutes) + ":" + f.format(sec)+"  Время отдыха: "+f.format(hourRest) + ":" + f.format(minutesRest) + ":" + f.format(secRest));
+        String time= ("  Время отдыха: "+f.format(hourRest) + ":" + f.format(minutesRest) + ":" + f.format(secRest));
         return time;
     }
 

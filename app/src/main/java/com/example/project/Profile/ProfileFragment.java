@@ -78,7 +78,7 @@ public class ProfileFragment extends Fragment {
                         }
                     }
                     ProfileAdapter adapter = new ProfileAdapter();
-                    ItemClickListener itemClickListener= diaryEntry -> adapter.openFragment(diaryEntry);
+                    ItemClickListener itemClickListener= diaryEntry -> adapter.openFragment(getContext(), diaryEntry, getLayoutInflater());
                     adapter.setItemClickListener(itemClickListener);
                     recycler.setAdapter(adapter);
                     adapter.setItems(diaryEntryList);

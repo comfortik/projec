@@ -1,5 +1,6 @@
 package com.example.project.Profile;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project.Main.DiaryEntry;
 import com.example.project.R;
+import com.example.project.databinding.FragmentDiaryEntryBinding;
+import com.example.project.databinding.FragmentEmotionDiaryBinding;
 import com.example.project.databinding.ItemDiaryBinding;
 
 import java.util.ArrayList;
@@ -18,7 +21,7 @@ import java.util.List;
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileHolder> {
     ItemClickListener itemClickListener;
     List<DiaryEntry> diaryEntryList = new ArrayList<>();
-
+    FragmentDiaryEntryBinding binding;
 
     @NonNull
     @Override
@@ -47,7 +50,82 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileHolder> {
         this.itemClickListener =itemClickListener;
     }
 
-    public void openFragment(DiaryEntry diaryEntry) {
+
+
+    public void openFragment(Context context, DiaryEntry diaryEntry, LayoutInflater layoutInflater) {
+        alertDiary(context, diaryEntry,layoutInflater);
+    }
+    public void alertDiary(Context context, DiaryEntry diaryEntry, LayoutInflater layoutInflater){
+        AlertDialog alertDialog;
+        AlertDialog.Builder builder= new AlertDialog.Builder(context);
+        binding= FragmentDiaryEntryBinding.inflate(layoutInflater, null , false);
+        switch (diaryEntry.getId()){
+            case 1:
+                if(diaryEntry.getFocusMode().isInterval()){
+                    setImage(diaryEntry.getEmotion().getId());
+                    binding.tvFocus.setText(diaryEntry.getFocusMode().getTime());
+                    binding.tvFocusInterval.setText(diaryEntry.getFocusMode().getTimeInterval());
+                    binding.time.setText(diaryEntry.getDate().toString());
+                }
+                else{
+                    setImage(diaryEntry.getEmotion().getId());
+                    binding.tvFocus.setText(diaryEntry.getFocusMode().getTime());
+                    binding.time.setText(diaryEntry.getDate().toString());
+                }
+                break;
+            case 2:
+                if(diaryEntry.getFocusMode().isInterval()){
+                    setImage(diaryEntry.getEmotion().getId());
+                    binding.tvFocus.setText(diaryEntry.getFocusMode().getTime());
+                    binding.tvFocusInterval.setText(diaryEntry.getFocusMode().getTimeInterval());
+                    binding.note.setText(diaryEntry.getNote().getNote());
+                    binding.time.setText(diaryEntry.getDate().toString());
+                }
+                else{
+                    setImage(diaryEntry.getEmotion().getId());
+                    binding.tvFocus.setText(diaryEntry.getFocusMode().getTime());
+                    binding.note.setText(diaryEntry.getNote().getNote());
+                    binding.time.setText(diaryEntry.getDate().toString());
+                }
+                break;
+            case 3:
+                setImage(diaryEntry.getEmotion().getId());
+                binding.time.setText(diaryEntry.getDate().toString());
+                break;
+            case 4:
+                setImage(diaryEntry.getEmotion().getId());
+                binding.note.setText(diaryEntry.getNote().getNote());
+                binding.time.setText(diaryEntry.getDate().toString());
+                break;
+        }
+        View view = binding.getRoot();
+        alertDialog= builder.setView(view).show();
+        binding.btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.cancel();
+            }
+        });
 
     }
+    private void setImage(int id){
+        switch(id){
+            case 1:
+                binding.imageView.setBackgroundResource(R.drawable.ic_launcher_background);
+                break;
+            case 2:
+                binding.imageView.setBackgroundResource(R.drawable.ic_launcher_background);
+                break;
+            case 3:
+                binding.imageView.setBackgroundResource(R.drawable.ic_launcher_background);
+                break;
+            case 4:
+                binding.imageView.setBackgroundResource(R.drawable.ic_launcher_background);
+                break;
+
+
+        }
+    }
+
+
 }

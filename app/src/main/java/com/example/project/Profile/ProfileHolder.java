@@ -40,7 +40,7 @@ public class ProfileHolder extends RecyclerView.ViewHolder {
     public void bindData(DiaryEntry diaryEntry){
         switch (diaryEntry.getId()){
             case 1:
-                binding.tvFocus.setText(diaryEntry.getFocusMode().toString());
+                binding.tvFocus.setText(diaryEntry.getFocusMode().getName());
                 if(!(diaryEntry.getFocusMode().isInterval())){
                     binding.tvFocusTime.setText(diaryEntry.getFocusMode().getTime());
             }
@@ -50,7 +50,7 @@ public class ProfileHolder extends RecyclerView.ViewHolder {
             case 2:
                 binding.tvFocus.setText(diaryEntry.getFocusMode().getName());
                 if(!(diaryEntry.getFocusMode().isInterval())){
-                    binding.tvFocusTime.setText(diaryEntry.getFocusMode().getTimeInterval());
+                    binding.tvFocusTime.setText(diaryEntry.getFocusMode().getTime()+" "+ diaryEntry.getFocusMode().getTimeInterval());
                 }
                 setImage(diaryEntry.getEmotion().getId());
                 binding.time.setText(diaryEntry.getDate().toString());

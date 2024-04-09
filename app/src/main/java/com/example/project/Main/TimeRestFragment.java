@@ -23,7 +23,7 @@ public class TimeRestFragment extends Fragment {
     public static TimeRestFragment newInstance(String name, long timeWork) {
         TimeRestFragment timeRestFragment = new TimeRestFragment();
         Bundle args = new Bundle();
-        args. putString("name", name);
+        args.putString("name", name);
         args.putLong("timeWork", timeWork);
         timeRestFragment.setArguments(args);
         return timeRestFragment;

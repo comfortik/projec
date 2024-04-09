@@ -12,20 +12,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.project.Main.DiaryEntry;
 import com.example.project.R;
+import com.example.project.databinding.FragmentDiaryEntryBinding;
 
 public class DiaryEntryFragment extends Fragment {
 
     private DiaryEntryViewModel mViewModel;
-
-    public static DiaryEntryFragment newInstance() {
-        return new DiaryEntryFragment();
+    DiaryEntry diaryEntry;
+    FragmentDiaryEntryBinding binding;
+    public static DiaryEntryFragment newInstance(DiaryEntry diaryEntry) {
+        return new DiaryEntryFragment(diaryEntry);
     }
+    public DiaryEntryFragment(DiaryEntry diaryEntry){
+        this.diaryEntry=diaryEntry;
+    }
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_diary_entry, container, false);
+        binding= FragmentDiaryEntryBinding.inflate(inflater, null, false);
+        View view = binding.getRoot();
+
+        return view;
     }
 
     @Override
