@@ -2,38 +2,27 @@ package com.example.project.Emotion;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 
 import com.example.project.Main.AddUserToFirebase;
 import com.example.project.Main.DiaryEntry;
 import com.example.project.Main.FirestoreGetId;
 import com.example.project.Main.FocusMode;
-import com.example.project.Main.MainActivity;
 import com.example.project.Note.Note;
 import com.example.project.OnNote;
-import com.example.project.R;
-import com.example.project.databinding.ActivityEmotionDiaryBinding;
 import com.example.project.databinding.AlertNoteBinding;
 import com.example.project.databinding.FragmentEmotionDiaryBinding;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Objects;
 
 public class EmotionUtils {
      FirestoreEmotion firestoreEmotion;
      ReactForEmotions reactForEmotions;
      OnNote onNote;
-     Emotion emotion;
     DiaryEntry diaryEntry;
     private OnCloseDialogEmotionListener onCloseDialogEmotionListener;
 
@@ -47,31 +36,31 @@ public class EmotionUtils {
     }
 
 
-    public  void setListeners(Context context, FragmentEmotionDiaryBinding binding, FocusMode focusMode) {
+    public  void setListeners(Context context, FragmentEmotionDiaryBinding binding) {
 
         binding.imgPloho.setOnClickListener(v -> {
             Emotion emotion = new Emotion(1);
-            emotionBtns(context,  focusMode, emotion);
+            emotionBtns(context, emotion);
         });
         binding.imgTakoe.setOnClickListener(v -> {
             Emotion emotion= new Emotion(2);
-            emotionBtns(context,  focusMode, emotion);
+            emotionBtns(context, emotion);
         });
         binding.imgNorm.setOnClickListener(v -> {
             Emotion emotion= new Emotion(3);
-            emotionBtns(context,  focusMode, emotion);
+            emotionBtns(context, emotion);
         });
         binding.imgWow.setOnClickListener(v -> {
             Emotion emotion= new Emotion(4);
-            emotionBtns(context, focusMode, emotion);
+            emotionBtns(context, emotion);
         });
         binding.imgAhuenno.setOnClickListener(v -> {
             Emotion emotion= new Emotion(5);
-            emotionBtns(context,  focusMode, emotion);
+            emotionBtns(context, emotion);
         });
     }
 
-    public  void emotionBtns(Context context, FocusMode focusMode, Emotion emotion ) {
+    public  void emotionBtns(Context context, Emotion emotion ) {
         int emotionId = emotion.getId();
         switch (emotionId){
             case 1:
@@ -92,11 +81,12 @@ public class EmotionUtils {
         }
     }
 
-    public  void AlertDialogEmotionDiary(Context context, AddUserToFirebase.HelpEmotion helpEmotion, Emotion emotion) {
+    private void AlertDialogEmotionDiary(Context context, AddUserToFirebase.HelpEmotion helpEmotion, Emotion emotion) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(helpEmotion.getHelp())
                 .setMessage("Хочешь оставить заметку?")
                 .setCancelable(true)
+                .setCancelable(false)
                 .setPositiveButton("Да", (dialog, which) -> {
                     onNote.onNote(emotion);
                     dialog.cancel();
@@ -117,12 +107,10 @@ public class EmotionUtils {
             diaryEntry = new DiaryEntry(emotion);
         }
 
-        firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
-            fb.collection("Users")
-                    .document(userId)
-                    .collection("Entry")
-                    .add(diaryEntry);
-        });
+        firestoreGetId.getId(Objects.requireNonNull(mAuth.getCurrentUser()).getUid(), userId -> fb.collection("Users")
+                .document(userId)
+                .collection("Entry")
+                .add(diaryEntry));
 
 
     }
@@ -131,13 +119,17 @@ public class EmotionUtils {
         FirestoreGetId firestoreGetId = new FirestoreGetId(fb);
         AlertDialog dialog;
         AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
-
+        builder1.setCancelable(false);
         AlertNoteBinding binding2 = AlertNoteBinding.inflate(layoutInflater, null, false);
         View view = binding2.getRoot();
         dialog=builder1.setView(view).show();
-        binding2.btnOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        binding2.btnOk.setOnClickListener(v -> {
+            if(binding2.etNote.getText().length()==0){
+                Toast.makeText(context, "Введите заметку", Toast.LENGTH_SHORT).show();
+            } else if (binding2.etNote.getText().toString().isEmpty()) {
+                Toast.makeText(context, "Введите заметку", Toast.LENGTH_SHORT).show();
+            }
+            else{
                 Note note = new Note(binding2.etNote.getText().toString());
                 if(focusMode!=null) {
                     diaryEntry = new DiaryEntry(note, focusMode, emotion);
@@ -145,21 +137,17 @@ public class EmotionUtils {
                 else{
                     diaryEntry = new DiaryEntry(note, emotion);
                 }
-                firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
-                    fb.collection("Users")
-                            .document(userId)
-                            .collection("Entry")
-                            .add(diaryEntry)
-                            .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentReference> task) {
-                                    if(task.isSuccessful())Toast.makeText(context, "Запись добавлена", Toast.LENGTH_SHORT);
-                                    else Toast.makeText(context, "Не удалось добавить запись", Toast.LENGTH_SHORT);
-                                }
-                            });
-                });
+                firestoreGetId.getId(Objects.requireNonNull(mAuth.getCurrentUser()).getUid(), userId -> fb.collection("Users")
+                        .document(userId)
+                        .collection("Entry")
+                        .add(diaryEntry)
+                        .addOnCompleteListener(task -> {
+                            if(task.isSuccessful())Toast.makeText(context, "Запись добавлена", Toast.LENGTH_SHORT).show();
+                            else Toast.makeText(context, "Не удалось добавить запись", Toast.LENGTH_SHORT).show();
+                        }));
                 dialog.cancel();
             }
+
         });
 
 

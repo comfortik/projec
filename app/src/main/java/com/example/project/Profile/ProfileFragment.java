@@ -36,6 +36,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ProfileFragment extends Fragment {
@@ -58,7 +60,7 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
         RecyclerView recycler = view.findViewById(R.id.recyclerView);
-        binding.bottomNavigationView.setSelectedItemId(R.id.bottom_profile);
+//        binding.bottomNavigationView.setSelectedItemId(R.id.bottom_profile);
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         ReplaceFragment replaceFragment = new ReplaceFragment();
 
@@ -74,7 +76,7 @@ public class ProfileFragment extends Fragment {
                     for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                         if(documentSnapshot!=null){
                             diaryEntryList = queryDocumentSnapshots.toObjects(DiaryEntry.class);
-
+                            Collections.sort(diaryEntryList, Comparator.comparing(DiaryEntry::getDate));
                         }
                     }
                     ProfileAdapter adapter = new ProfileAdapter();
@@ -87,26 +89,27 @@ public class ProfileFragment extends Fragment {
         });
 
 
-        binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                if (menuItem.getItemId() == R.id.bottom_settings) {
-                    replaceFragment.replaceFragment(fragmentManager,new SettingsFragment());
-                } else if (menuItem.getItemId() == R.id.bottom_emotionDiary) {
-                    replaceFragment.replaceFragment(fragmentManager,new EmotionDiaryFragment());
-                } else if (menuItem.getItemId() == R.id.bottom_timer) {
-                    ((OnHideFragmentContainerListener)getActivity()).onButtonTimerClick();
-                    getActivity().getSupportFragmentManager().beginTransaction().remove(ProfileFragment.this).commit();
-                } else if (menuItem.getItemId() == R.id.bottom_sound) {
-                    replaceFragment.replaceFragment(fragmentManager,new SoundFragment());
-                } else if (menuItem.getItemId() == R.id.bottom_profile) {
-                    replaceFragment.replaceFragment(fragmentManager, new ProfileFragment());
-                }
 
-
-                return false;
-            }
-        });
+//        binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+//            @Override
+//            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+//                if (menuItem.getItemId() == R.id.bottom_settings) {
+//                    replaceFragment.replaceFragment(fragmentManager,new SettingsFragment());
+//                } else if (menuItem.getItemId() == R.id.bottom_emotionDiary) {
+//                    replaceFragment.replaceFragment(fragmentManager,new EmotionDiaryFragment());
+//                } else if (menuItem.getItemId() == R.id.bottom_timer) {
+//                    ((OnHideFragmentContainerListener)getActivity()).onButtonTimerClick();
+//                    getActivity().getSupportFragmentManager().beginTransaction().remove(ProfileFragment.this).commit();
+//                } else if (menuItem.getItemId() == R.id.bottom_sound) {
+//                    replaceFragment.replaceFragment(fragmentManager,new SoundFragment());
+//                } else if (menuItem.getItemId() == R.id.bottom_profile) {
+//                    replaceFragment.replaceFragment(fragmentManager, new ProfileFragment());
+//                }
+//
+//
+//                return false;
+//            }
+//        });
         return view;
     }
 

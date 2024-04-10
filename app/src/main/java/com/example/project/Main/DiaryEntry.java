@@ -14,6 +14,7 @@ public class DiaryEntry {
     FocusMode focusMode;
     Emotion emotion;
     int id;
+    Date date;
 
     public int getId() {
         return id;
@@ -31,7 +32,7 @@ public class DiaryEntry {
         this.date = date;
     }
 
-    Date date;
+
 
     public DiaryEntry(FocusMode focusMode, Emotion emotion) {
         id =1;

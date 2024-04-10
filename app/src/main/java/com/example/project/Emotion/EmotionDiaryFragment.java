@@ -4,7 +4,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,10 +14,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.example.project.Main.AddUserToFirebase;
-import com.example.project.Main.DiaryEntry;
 import com.example.project.Main.FirestoreGetId;
 import com.example.project.OnHideFragmentContainerListener;
 import com.example.project.OnNote;
@@ -61,7 +57,7 @@ public class EmotionDiaryFragment extends Fragment {
         FirestoreGetId firestoreGetId = new FirestoreGetId(fb);
         firestoreEmotion = new FirestoreEmotion(getActivity(), fb, user);
         EmotionUtils emotionUtils = new EmotionUtils(firestoreEmotion, reactForEmotions);
-        emotionUtils.setListeners(getActivity(), binding, null);
+        emotionUtils.setListeners(getActivity(), binding);
         ReplaceFragment replaceFragment = new ReplaceFragment();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         binding.bottomNavigationView.setSelectedItemId(R.id.bottom_emotionDiary);
