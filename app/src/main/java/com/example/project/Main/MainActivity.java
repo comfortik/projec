@@ -1,18 +1,22 @@
 package com.example.project.Main;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -21,19 +25,15 @@ import com.example.project.Emotion.Emotion;
 import com.example.project.Emotion.EmotionDiaryFragment;
 import com.example.project.Emotion.EmotionUtils;
 import com.example.project.Emotion.FirestoreEmotion;
-import com.example.project.Emotion.OnAddUserToFirestore;
 import com.example.project.Emotion.OnCloseDialogEmotionListener;
 import com.example.project.Emotion.ReactForEmotions;
-import com.example.project.Note.Note;
 import com.example.project.OnHideFragmentContainerListener;
 import com.example.project.OnNote;
 import com.example.project.Profile.ProfileFragment;
 import com.example.project.R;
 import com.example.project.Settings.SettingsFragment;
 import com.example.project.Sounds.SoundFragment;
-import com.example.project.databinding.ActivityEmotionDiaryBinding;
 import com.example.project.databinding.ActivityMainBinding;
-import com.example.project.databinding.AlertNoteBinding;
 import com.example.project.databinding.FragmentEmotionDiaryBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -48,7 +48,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements post, OnHideFragmentContainerListener {
     long milliesec;
@@ -57,51 +56,38 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     CountDownTimer countDownTimer;
     AlertDialog.Builder builder;
     public Type currentType;
-    private List<Type> types;
     int countRest;
     int countWork ;
     Spisok spisok;
-    CustomAdapter adapter;
     private ActivityMainBinding binding;
     FirebaseFirestore fb;
     FirebaseAuth mAuth;
     FirestoreGetId firestoreGetId;
     AddUserToFirebase add;
-    EmotionUtils emotionUtils;
+    long restartTimerMillies=0;
+    int countRestartTimer;
+    Context context = MainActivity.this;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
-        setContentView(binding.getRoot());
+//        setContentView(binding.getRoot());
+        View customLoadingView = getLayoutInflater().inflate(R.layout.splash_screen, null);
+        setContentView(customLoadingView);
+
         fb = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-         add= new AddUserToFirebase(this, fb, mAuth);
+        add= new AddUserToFirebase(this, fb, mAuth);
         add.anonimouseSignUp();
         firestoreGetId = new FirestoreGetId(fb);
-        add.setOnAddUserToFirestore(new OnAddUserToFirestore() {
-            @Override
-            public void addUser() {
-//                firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
-//                    fb.collection("Users")
-//                            .document(userId)
-//                            .collection("Types")
-//                            .add(new Type("aa", 5000,3000));
-//                });
-//                firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
-//                    fb.collection("Users")
-//                            .document(userId)
-//                            .collection("Types")
-//                            .add(new Type("adasd", 5000));
-//                });
+        add.setOnAddUserToFirestore(this::getTypes);
 
-
-                getTypes();
-            }
-        });
-//        getTypes();
-
-
+        final int NOTIFICATION_PERMISSION_CODE = 123;
+        if (ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_PERMISSION_CODE);
+        }
         binding.bottomNavigationView.setSelectedItemId(R.id.bottom_timer);
         binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -151,6 +137,8 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         binding.btnTimer.setOnClickListener(v -> {
             countWork= 0;
             countRest=0;
+            restartTimerMillies=0;
+            countRestartTimer=0;
             porabotal= true;
             if (countDownTimer != null) {
                 countDownTimer.cancel();
@@ -158,7 +146,11 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             binding.tvs.setText("Работа");
             binding.btnTimer.setVisibility(View.GONE);
             binding.ll.setVisibility(View.VISIBLE);
-            Timer(milliesec);
+            if(milliesec==0){Toast.makeText(context, "Выбранный тип фокусировки 00", Toast.LENGTH_SHORT);
+            binding.btnTimer.setVisibility(View.VISIBLE);
+            binding.ll.setVisibility(View.GONE);}
+            else{Timer(milliesec);}
+
         });
         binding.filliedExposed.setOnItemClickListener((parent, view, position, id) -> {
             if (countDownTimer != null) {
@@ -178,31 +170,13 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             }
         });
 
-
-
         binding.btnTimerCancel.setOnClickListener(v -> {
-            cancelButton=true;
-            if(!currentType.isInterval()){
+                cancelButton=true;
                 countDownTimer.cancel();
+                binding.tvTimer.setText("00:00:00");
                 finishTimer();
-            }
-            else{
-                countDownTimer.cancel();
-                binding.tvs.setText((countRest+" "+countWork).toString());
-                finishTimer();
-            }
         });
-        binding.btnTimerPause.setOnClickListener(v -> {
-            if(isRunning){
-                countDownTimer.cancel();
-                binding.btnTimerPause.setText("Play");
-                isRunning=false;
-            } else if (!isRunning) {
-                Timer(savemilliesec);
-                binding.btnTimerPause.setText("Pause");
-                isRunning= true;
-            }
-        });
+
     }
     private void replaceFragment(Fragment fragment){
         binding.fragmentView.setVisibility(View.VISIBLE);
@@ -243,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
 
 
     public void Timer(long milliesec){
+        savemilliesec=0;
         countDownTimer= new CountDownTimer(milliesec,1000){
             @Override
             public void onTick(long millisUntilFinished) {
@@ -254,10 +229,14 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 long sec = totalSeconds % 60;
                 savemilliesec= millisUntilFinished;
                 binding.tvTimer.setText(f.format(hour) + ":" + f.format(min) + ":" + f.format(sec));
+                restartTimerMillies=millisUntilFinished;
             }
             @Override
             public void onFinish() {
-                if(currentType.isInterval() && porabotal){
+                if(currentType==null){
+                    Toast.makeText(context, "null type", Toast.LENGTH_SHORT);
+                }
+                else if(currentType.isInterval() && porabotal){
                     Timer(currentType.getTimeRest());
                     porabotal=false;
                     countRest++;
@@ -270,8 +249,10 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 } else{
                     binding.tvTimer.setText("00:00:00");
                     finishTimer();
+                    savemilliesec=0;
                 }
             }
+
         }.start();
     }
     public void createNewType(){
@@ -293,15 +274,15 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         spisok.createSpisok(new DataLoadListener() {
             @Override
             public void onDataLoaded(CustomAdapter adapter) {
-
                 if (adapter != null) {
+                    setContentView(binding.getRoot());
                     binding.filliedExposed.setAdapter(adapter);
                 } else {
-                    // обработка ошибки загрузки данных
                 }
             }
         });
     }
+
     public void addTypes(String name, long timeWork, long timeRest){
         firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId1 -> {
             if(userId1!=null){
@@ -318,8 +299,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                         });
             }
         });
-
-
     }
     public void addTypes(String name, long timeWork){
         firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId1 -> {
@@ -363,8 +342,13 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     }
 
     public void finishTimer(){
+        binding.btnTimer.setVisibility(View.VISIBLE);
+        binding.ll.setVisibility(View.GONE);
         if(!currentType.isInterval()){
             builder = new AlertDialog.Builder(this);
+            if(countRestartTimer>0){
+                savemilliesec+=restartTimerMillies;
+            }
             long finishmillies= (milliesec-savemilliesec)/1000;
             long hour= finishmillies/3600;
             long minutes = (finishmillies-hour*3600)/60;
@@ -452,7 +436,59 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         SoundFragment soundFragment = new SoundFragment();
         soundFragment.stopMedia();
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(countDownTimer!=null) {
+            NotificationHelper.sendNotification(this, savemilliesec);
+            countDownTimer.cancel();
+        }
+        restartTimerMillies+=savemilliesec;
+        countRestartTimer++;
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        NotificationManager notificationManager= (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
+        if(savemilliesec>0){
+            countDownTimer.cancel();
+            Timer(savemilliesec);
+        }
+
+    }
 }
+class NotificationHelper {
+
+    private static final String CHANNEL_ID = "1";
+    private static final String CHANNEL_NAME = "My Channel";
+    public static void sendNotification(Context context, long savemilliesec) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setContentText("DAAAAAAAAA")
+                .setContentTitle("poluchilos")
+                .setSmallIcon(R.drawable.img)
+                .setAutoCancel(true)
+                .setPriority(NotificationManager.IMPORTANCE_HIGH);
+//        Intent intent = new Intent(context, MainActivity.class);
+//        intent.putExtra("save", savemilliesec);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_MUTABLE);
+//        builder.setContentIntent(pendingIntent);
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        notificationManager.notify(1, builder.build());
+
+    }
+}
+
+
+
 
 
 

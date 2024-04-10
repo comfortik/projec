@@ -3,6 +3,7 @@ package com.example.project.Settings;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.project.Emotion.EmotionDiaryFragment;
+import com.example.project.Main.MainActivity;
 import com.example.project.OnHideFragmentContainerListener;
 import com.example.project.Profile.ProfileFragment;
 import com.example.project.R;
@@ -41,6 +43,14 @@ public class SettingsFragment extends Fragment  {
         View view = binding.getRoot();
         ReplaceFragment replaceFragment = new ReplaceFragment();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        binding.btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(intent);
+            }
+        });
         binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
