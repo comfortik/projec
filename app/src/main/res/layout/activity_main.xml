@@ -8,102 +8,105 @@
     android:orientation="vertical"
     android:gravity="bottom"
     tools:context=".Main.MainActivity">
-    <FrameLayout
-        android:id="@+id/fragmentView"
+    <LinearLayout
+        android:id="@+id/mainlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn"/>
-    <TextView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:id="@+id/tvs"/>
-    <FrameLayout
-        android:id="@+id/fragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"/>
+        android:orientation="vertical"
+        android:gravity="bottom">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Режим"
-        android:fontFamily="monospace"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/tvs"/>
+        <FrameLayout
+            android:id="@+id/fragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Режим"
+            android:fontFamily="monospace"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
             <AutoCompleteTextView
                 android:id="@+id/fillied_exposed"
                 android:layout_width="match_parent"
+                android:layout_marginHorizontal="12dp"
                 android:layout_height="wrap_content"
                 android:inputType="none" />
 
 
 
-    </com.google.android.material.textfield.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/tvTimer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="50sp"
-            android:fontFamily="monospace"
-            android:gravity="center"
-            android:layout_marginBottom="45dp"/>
-
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnTimer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Start"
-                android:fontFamily="monospace"
-                style="@style/btn"
-                android:layout_marginEnd="12dp" />
         <LinearLayout
-            android:id="@+id/ll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:visibility="gone">
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnTimerCancel"
-                android:layout_width="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Cancel"
+                android:textSize="50sp"
                 android:fontFamily="monospace"
-                style="@style/btn"
-                android:layout_marginEnd="12dp" />
+                android:gravity="center"
+                android:layout_marginBottom="45dp"/>
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginVertical="16dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTimer"
+                style="@style/btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:fontFamily="monospace"
+                android:text="Start" />
+
+            <LinearLayout
+                android:id="@+id/ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTimerCancel"
+                    style="@style/btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    android:fontFamily="monospace"
+                    android:text="Cancel" />
+
+            </LinearLayout>
+
+        </LinearLayout>
     </LinearLayout>
+    <FrameLayout
+        android:id="@+id/fragmentView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:menu="@menu/bottom_menu"
-        android:elevation="2dp"
         app:itemIconSize="30dp"
-        app:itemIconTint="@drawable/item_selector"
-        app:itemRippleColor="@android:color/transparent"
         app:labelVisibilityMode="unlabeled"/>
-
-
-
 
 
 </LinearLayout>

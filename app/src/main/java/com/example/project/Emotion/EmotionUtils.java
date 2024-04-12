@@ -2,6 +2,7 @@ package com.example.project.Emotion;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
@@ -102,11 +103,11 @@ public class EmotionUtils {
         FirestoreGetId  firestoreGetId = new FirestoreGetId(fb);
         if(focusMode!=null){
             diaryEntry = new DiaryEntry( focusMode,  emotion);
+            Log.e("AAAAAAA", String.valueOf(diaryEntry.getFocusMode().getSecRest()));
         }
         else{
             diaryEntry = new DiaryEntry(emotion);
         }
-
         firestoreGetId.getId(Objects.requireNonNull(mAuth.getCurrentUser()).getUid(), userId -> fb.collection("Users")
                 .document(userId)
                 .collection("Entry")

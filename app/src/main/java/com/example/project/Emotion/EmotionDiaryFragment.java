@@ -58,9 +58,6 @@ public class EmotionDiaryFragment extends Fragment {
         firestoreEmotion = new FirestoreEmotion(getActivity(), fb, user);
         EmotionUtils emotionUtils = new EmotionUtils(firestoreEmotion, reactForEmotions);
         emotionUtils.setListeners(getActivity(), binding);
-        ReplaceFragment replaceFragment = new ReplaceFragment();
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        binding.bottomNavigationView.setSelectedItemId(R.id.bottom_emotionDiary);
         emotionUtils.setOnNote(new OnNote() {
             @Override
             public void onNote(Emotion emotion) {
@@ -74,26 +71,6 @@ public class EmotionDiaryFragment extends Fragment {
             }
         });
 
-        binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                if (menuItem.getItemId() == R.id.bottom_settings) {
-                    replaceFragment.replaceFragment(fragmentManager,new SettingsFragment());
-                } else if (menuItem.getItemId() == R.id.bottom_emotionDiary) {
-                    replaceFragment.replaceFragment(fragmentManager,new EmotionDiaryFragment());
-                } else if (menuItem.getItemId() == R.id.bottom_timer) {
-                    ((OnHideFragmentContainerListener)getActivity()).onButtonTimerClick();
-                    fragmentManager.beginTransaction().remove(EmotionDiaryFragment.this).commit();
-                } else if (menuItem.getItemId() == R.id.bottom_sound) {
-                    replaceFragment.replaceFragment(fragmentManager,new SoundFragment());
-                } else if (menuItem.getItemId() == R.id.bottom_profile) {
-                    replaceFragment.replaceFragment(fragmentManager, new ProfileFragment());
-                }
-
-
-                return false;
-            }
-        });
 
 
         return view ;

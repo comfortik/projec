@@ -46,34 +46,12 @@ public class SoundFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentSoundBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
-        binding.bottomNavigationView.setSelectedItemId(R.id.bottom_sound);
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        ReplaceFragment replaceFragment = new ReplaceFragment();
         Context context= getContext();
         mediaPlayer1 = MediaPlayer.create(context, R.raw.sound1);
         mediaPlayer2 = MediaPlayer.create(context, R.raw.sound1);
         mediaPlayer3 = MediaPlayer.create(context, R.raw.sound1);
         mediaPlayer4 = MediaPlayer.create(context, R.raw.sound1);
-        binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                if (menuItem.getItemId() == R.id.bottom_settings) {
-                    replaceFragment.replaceFragment(fragmentManager,new SettingsFragment());
-                } else if (menuItem.getItemId() == R.id.bottom_emotionDiary) {
-                    replaceFragment.replaceFragment(fragmentManager,new EmotionDiaryFragment());
-                } else if (menuItem.getItemId() == R.id.bottom_timer) {
-                    fragmentManager.beginTransaction().remove(SoundFragment.this).commit();
-                    ((OnHideFragmentContainerListener)getActivity()).onButtonTimerClick();
-                } else if (menuItem.getItemId() == R.id.bottom_sound) {
-                    replaceFragment.replaceFragment(fragmentManager,new SoundFragment());
-                } else if (menuItem.getItemId() == R.id.bottom_profile) {
-                    replaceFragment.replaceFragment(fragmentManager, new ProfileFragment());
-                }
 
-
-                return false;
-            }
-        });
 
         binding.buttonSound1.setOnClickListener(new View.OnClickListener() {
 

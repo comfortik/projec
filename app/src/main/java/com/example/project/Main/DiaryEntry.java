@@ -5,6 +5,7 @@ import com.example.project.Note.Note;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 
 import javax.security.auth.callback.Callback;
 
@@ -15,6 +16,17 @@ public class DiaryEntry {
     Emotion emotion;
     int id;
     Date date;
+
+    public int getIdDataBase() {
+        return idDataBase;
+    }
+
+    public void setIdDataBase(int idDataBase) {
+        this.idDataBase = idDataBase;
+    }
+    Random random = new Random();
+
+    int idDataBase;
 
     public int getId() {
         return id;
@@ -36,6 +48,7 @@ public class DiaryEntry {
 
     public DiaryEntry(FocusMode focusMode, Emotion emotion) {
         id =1;
+
         date = new Date();
         this.focusMode = focusMode;
         this.emotion = emotion;

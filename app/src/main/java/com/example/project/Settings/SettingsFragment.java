@@ -43,31 +43,7 @@ public class SettingsFragment extends Fragment  {
         View view = binding.getRoot();
         ReplaceFragment replaceFragment = new ReplaceFragment();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        binding.btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivity(intent);
-            }
-        });
-        binding.bottomNavigationView.setOnItemSelectedListener(menuItem -> {
-            if (menuItem.getItemId() == R.id.bottom_settings) {
-                replaceFragment.replaceFragment(fragmentManager,new SettingsFragment());
-            } else if (menuItem.getItemId() == R.id.bottom_emotionDiary) {
-                replaceFragment.replaceFragment(fragmentManager,new EmotionDiaryFragment());
-            } else if (menuItem.getItemId() == R.id.bottom_timer) {
-                ((OnHideFragmentContainerListener)getActivity()).onButtonTimerClick();
-                fragmentManager.beginTransaction().remove(SettingsFragment.this).commit();
-            } else if (menuItem.getItemId() == R.id.bottom_sound) {
-                replaceFragment.replaceFragment(fragmentManager,new SoundFragment());
-            } else if (menuItem.getItemId() == R.id.bottom_profile) {
-                replaceFragment.replaceFragment(fragmentManager, new ProfileFragment());
-            }
 
-
-            return false;
-        });
         return view  ;
     }
     public void setOnHideFragmentContainerListener(OnHideFragmentContainerListener onHideFragmentContainerListener){

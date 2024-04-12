@@ -4,14 +4,20 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 public class FocusMode {
+    private boolean interval;
+
     public FocusMode() {
     }
 
-    public boolean isInterval() {
-        return Interval;
+
+    public void setInterval(boolean interval) {
+        this.interval = interval;
     }
 
-    boolean Interval;
+
+    public boolean isInterval() {
+        return interval;
+    }
 
 
     public String getName() {
@@ -60,7 +66,8 @@ public class FocusMode {
     int countWork;
     int countRest;
     //конструктор для неинтервальной фокусировки
-    public FocusMode(String name, long hour, long minutes, long sec) {
+    public FocusMode(String name, long hour, long minutes, long sec, boolean interval) {
+        this.interval=interval;
         this.name = name;
         this.hour = hour;
         this.minutes = minutes;
@@ -68,7 +75,8 @@ public class FocusMode {
     }
 
     //конструктор для интервальной фокусировки
-    public FocusMode(String name, long hour, long minutes, long sec, long hourRest, long minutesRest, long secRest, int countWork, int countRest) {
+    public FocusMode(String name, long hour, long minutes, long sec, long hourRest, long minutesRest, long secRest, int countWork, int countRest, boolean interval) {
+        this.interval=true;
         this.name = name;
         this.hour = hour;
         this.minutes = minutes;

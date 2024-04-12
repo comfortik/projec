@@ -1,9 +1,12 @@
 package com.example.project.Main;
 
 import com.example.project.Emotion.EmotionDiaryFragment;
+import com.example.project.OnIdReturn;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.Date;
 
 public class FirestoreGetId {
     FirebaseFirestore fb;
@@ -27,4 +30,7 @@ public class FirestoreGetId {
                     }
                 });
     }
+
+
+
 }

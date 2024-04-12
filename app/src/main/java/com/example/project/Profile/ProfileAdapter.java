@@ -108,6 +108,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileHolder> {
         });
 
     }
+    void deleteItem(int index) {
+        diaryEntryList.remove(index);
+        notifyItemRemoved(index);
+    }
     private void setImage(int id){
         switch(id){
             case 1:
@@ -122,7 +126,9 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileHolder> {
             case 4:
                 binding.imageView.setBackgroundResource(R.drawable.ic_launcher_background);
                 break;
-
+            case 5:
+                binding.imageView.setBackgroundResource(R.drawable.ic_launcher_background);
+                break;
 
         }
     }

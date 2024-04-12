@@ -3,6 +3,7 @@ package com.example.project.Profile;
 
 
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +28,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class ProfileHolder extends RecyclerView.ViewHolder {
     ItemDiaryBinding binding;
@@ -41,30 +46,41 @@ public class ProfileHolder extends RecyclerView.ViewHolder {
         switch (diaryEntry.getId()){
             case 1:
                 binding.tvFocus.setText(diaryEntry.getFocusMode().getName());
-                if(!(diaryEntry.getFocusMode().isInterval())){
+                if(diaryEntry.getFocusMode().isInterval()){
+                    binding.tvFocusTime.setText(diaryEntry.getFocusMode().getTime() +"\n"+diaryEntry.getFocusMode().getTimeInterval());
+                } else if (!diaryEntry.getFocusMode().isInterval()) {
                     binding.tvFocusTime.setText(diaryEntry.getFocusMode().getTime());
-            }
+                }
                 setImage(diaryEntry.getEmotion().getId());
-                binding.time.setText(diaryEntry.getDate().toString());
+                binding.time.setText(convertToLocalDateViaInstant(diaryEntry.getDate()));
                 break;
             case 2:
                 binding.tvFocus.setText(diaryEntry.getFocusMode().getName());
-                if(!(diaryEntry.getFocusMode().isInterval())){
-                    binding.tvFocusTime.setText(diaryEntry.getFocusMode().getTime()+" "+ diaryEntry.getFocusMode().getTimeInterval());
+                if(diaryEntry.getFocusMode().isInterval()){
+                    binding.tvFocusTime.setText(diaryEntry.getFocusMode().getTime() +"\n"+diaryEntry.getFocusMode().getTimeInterval());
+                } else if (!diaryEntry.getFocusMode().isInterval()) {
+                    binding.tvFocusTime.setText(diaryEntry.getFocusMode().getTime());
                 }
                 setImage(diaryEntry.getEmotion().getId());
-                binding.time.setText(diaryEntry.getDate().toString());
-                break;
+                binding.time.setText(convertToLocalDateViaInstant(diaryEntry.getDate()));
             case 3:
                 setImage(diaryEntry.getEmotion().getId());
-                binding.time.setText(diaryEntry.getDate().toString());
+                binding.time.setText(convertToLocalDateViaInstant(diaryEntry.getDate()));
                 break;
             case 4:
                 setImage(diaryEntry.getEmotion().getId());
-                binding.time.setText(diaryEntry.getDate().toString());
+                binding.time.setText(convertToLocalDateViaInstant(diaryEntry.getDate()));
                 break;
         }
         binding.getRoot().setOnClickListener(v -> itemClickListener.onItemClick(diaryEntry));
+    }
+    private String convertToLocalDateViaInstant(Date dateToConvert) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return dateToConvert.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toString();
+        }
+        else return dateToConvert.toString();
     }
     private void setImage(int id){
         switch(id){

@@ -2,22 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/bottom_settings"
-        android:icon="@mipmap/ic_launcher_round"
+        android:icon="@drawable/baseline_settings_24"
         android:title="Settings" />
     <item
         android:id="@+id/bottom_emotionDiary"
-        android:icon="@mipmap/ic_launcher_round"
+        android:icon="@drawable/baseline_back_hand_24"
         android:title="Search" />
     <item
         android:id="@+id/bottom_timer"
-        android:icon="@mipmap/ic_launcher_round"
+        android:icon="@drawable/baseline_access_time_24"
         android:title="Home" />
     <item
         android:id="@+id/bottom_sound"
-        android:icon="@mipmap/ic_launcher_round"
+        android:icon="@drawable/baseline_auto_awesome_24"
         android:title="Profile" />
     <item
         android:id="@+id/bottom_profile"
-        android:icon="@mipmap/ic_launcher_round"
+        android:icon="@drawable/baseline_accessibility_24"
         android:title="Profile" />
 </menu>

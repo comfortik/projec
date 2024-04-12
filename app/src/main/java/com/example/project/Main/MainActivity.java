@@ -9,9 +9,11 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -19,6 +21,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project.Emotion.EmotionDiaryFragment;
 import com.example.project.Emotion.EmotionUtils;
@@ -47,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     AlertDialog.Builder builder;
     public Type currentType;
     int countRest;
+    long restartRestMillies;
     int countWork ;
     Spisok spisok;
     private ActivityMainBinding binding;
@@ -84,22 +89,26 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         binding.bottomNavigationView.setOnItemSelectedListener(menuItem -> {
             if (menuItem.getItemId() == R.id.bottom_settings) {
                 SettingsFragment settingsFragment = new SettingsFragment();
-                settingsFragment.setOnHideFragmentContainerListener(() -> binding.bottomNavigationView.setVisibility(View.GONE));
+//                settingsFragment.setOnHideFragmentContainerListener(() -> binding.bottomNavigationView.setVisibility(View.GONE));
                 replaceFragment(new SettingsFragment());
             } else if (menuItem.getItemId() == R.id.bottom_emotionDiary) {
                 EmotionDiaryFragment emotionDiaryFragment = new EmotionDiaryFragment();
-                emotionDiaryFragment.setOnHideFragmentContainerListener(() -> binding.fragmentView.setVisibility(View.GONE));
+//                emotionDiaryFragment.setOnHideFragmentContainerListener(() -> binding.fragmentView.setVisibility(View.GONE));
                 replaceFragment(new EmotionDiaryFragment());
             } else if (menuItem.getItemId() == R.id.bottom_sound) {
                 SoundFragment soundFragment= new SoundFragment();
-                soundFragment.setOnHideFragmentContainerListener(() -> binding.fragmentView.setVisibility(View.GONE));
+//                soundFragment.setOnHideFragmentContainerListener(() -> binding.fragmentView.setVisibility(View.GONE));
                 replaceFragment(new SoundFragment());
             } else if (menuItem.getItemId() == R.id.bottom_profile) {
                 ProfileFragment profileFragment = new ProfileFragment();
 //                profileFragment.setOnHideFragmentContainerListener(() -> binding.fragmentView.setVisibility(View.GONE));
                 replaceFragment(profileFragment);
             }
-            return false;
+            else if (menuItem.getItemId() == R.id.bottom_timer) {
+                binding.mainlayout.setVisibility(View.VISIBLE);
+            }
+
+            return true;
         });
 
 
@@ -139,16 +148,35 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             }
         });
 
+
         binding.btnTimerCancel.setOnClickListener(v -> {
                 cancelButton=true;
                 countDownTimer.cancel();
                 binding.tvTimer.setText("00:00:00");
                 finishTimer();
         });
+        ItemTouchHelper helper= new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                return makeMovementFlags(0, ItemTouchHelper.START);
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        });
+
 
     }
     private void replaceFragment(Fragment fragment){
         binding.fragmentView.setVisibility(View.VISIBLE);
+        binding.mainlayout.setVisibility(View.GONE);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.fragmentView,fragment )
@@ -190,7 +218,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 long sec = totalSeconds % 60;
                 savemilliesec= millisUntilFinished;
                 binding.tvTimer.setText(f.format(hour) + ":" + f.format(min) + ":" + f.format(sec));
-                restartTimerMillies=millisUntilFinished;
             }
             @Override
             public void onFinish() {
@@ -210,7 +237,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 } else{
                     binding.tvTimer.setText("00:00:00");
                     finishTimer();
-                    savemilliesec=0;
                 }
             }
 
@@ -295,19 +321,27 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         binding.ll.setVisibility(View.GONE);
         if(!currentType.isInterval()){
             builder = new AlertDialog.Builder(this);
-            if(countRestartTimer>0){
-                savemilliesec+=restartTimerMillies;
-            }
             long finishmillies= (milliesec-savemilliesec)/1000;
+            if(countRestartTimer>0){
+                finishmillies+=(restartTimerMillies/1000);
+            }
             long hour= finishmillies/3600;
             long minutes = (finishmillies-hour*3600)/60;
             long sec= (finishmillies-hour*3600-minutes*60);
-            FocusMode focusMode = new FocusMode(currentType.getName(), hour, minutes, sec );
+            FocusMode focusMode = new FocusMode(currentType.getName(), hour, minutes, sec, currentType.isInterval());
             alertDialogEmotion(focusMode);
         }
         else {
             long workTime=0;
             long restTime=0;
+            if(countRestartTimer>0){
+                if(restartTimerMillies>0)
+                    workTime+=(restartTimerMillies/1000);
+                else if (restartRestMillies>0) {
+                    restTime+=(restartRestMillies/1000);
+                }
+            }
+
             if(porabotal){
                 workTime = countWork*currentType.getTimeWork()/1000+(currentType.getTimeWork()-savemilliesec)/1000;
                 restTime = countRest*currentType.getTimeRest()/1000;
@@ -322,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             long hoursRest= restTime/3600;
             long minutesRest = (restTime-hours*3600)/60;
             long secRest = (restTime-hours*3600-minutes*60);
-            FocusMode focusMode = new FocusMode(currentType.getName(), hours, minutes, sec,hoursRest,minutesRest,secRest,countWork,countRest );
+            FocusMode focusMode = new FocusMode(currentType.getName(), hours, minutes, sec,hoursRest,minutesRest,secRest,countWork,countRest, currentType.isInterval() );
             alertDialogEmotion(focusMode);
         }
 
@@ -333,7 +367,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         FragmentEmotionDiaryBinding binding1 = FragmentEmotionDiaryBinding.inflate(getLayoutInflater(), null, false);
         View view = binding1.getRoot();
-        binding1.bottomNavigationView.setVisibility(View.GONE);
         ReactForEmotions reactForEmotions = new ReactForEmotions();
         FirestoreEmotion firestoreEmotion = new FirestoreEmotion(this, fb, mAuth.getCurrentUser());
         EmotionUtils emotionUtils = new EmotionUtils(firestoreEmotion, reactForEmotions);
@@ -372,9 +405,19 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         if(countDownTimer!=null) {
             NotificationHelper.sendNotification(this);
             countDownTimer.cancel();
+            countRestartTimer++;
+            if(currentType.isInterval()&&porabotal){
+                restartRestMillies += currentType.getTimeRest()-savemilliesec;
+            }
+            else if(currentType.isInterval()&& !porabotal) {
+                restartTimerMillies+= currentType.getTimeWork()-savemilliesec;
+            }
+            else{
+                restartTimerMillies+= currentType.getTimeWork()-savemilliesec;
+            }
         }
-        restartTimerMillies+=savemilliesec;
-        countRestartTimer++;
+
+
     }
 
 

@@ -8,12 +8,15 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import com.example.project.Emotion.EmotionDiaryFragment;
 import com.example.project.Main.DiaryEntry;
 import com.example.project.Main.FirestoreGetId;
@@ -27,10 +30,13 @@ import com.example.project.Sounds.SoundFragment;
 
 import com.example.project.databinding.FragmentProfileBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -38,6 +44,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class ProfileFragment extends Fragment {
@@ -46,10 +53,12 @@ public class ProfileFragment extends Fragment {
     private OnHideFragmentContainerListener hideFragmentContainerListener;
     FragmentProfileBinding binding;
     List<DiaryEntry> diaryEntryList= new ArrayList<>();
+    ProfileAdapter adapter;
 
     public static ProfileFragment newInstance() {
         return new ProfileFragment();
     }
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -60,56 +69,70 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
         RecyclerView recycler = view.findViewById(R.id.recyclerView);
-//        binding.bottomNavigationView.setSelectedItemId(R.id.bottom_profile);
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        ReplaceFragment replaceFragment = new ReplaceFragment();
-
 
         firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
             fb.collection("Users")
                     .document(userId)
                     .collection("Entry")
                     .get()
-                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                        if(documentSnapshot!=null){
-                            diaryEntryList = queryDocumentSnapshots.toObjects(DiaryEntry.class);
-                            Collections.sort(diaryEntryList, Comparator.comparing(DiaryEntry::getDate));
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            if(documentSnapshot!=null){
+                                binding.textView.setVisibility(View.GONE);
+                                diaryEntryList = queryDocumentSnapshots.toObjects(DiaryEntry.class);
+                                Collections.sort(diaryEntryList, Comparator.comparing(DiaryEntry::getDate));
+                            }
                         }
-                    }
-                    ProfileAdapter adapter = new ProfileAdapter();
-                    ItemClickListener itemClickListener= diaryEntry -> adapter.openFragment(getContext(), diaryEntry, getLayoutInflater());
-                    adapter.setItemClickListener(itemClickListener);
-                    recycler.setAdapter(adapter);
-                    adapter.setItems(diaryEntryList);
-                }
-            });
+                        adapter = new ProfileAdapter();
+                        ItemClickListener itemClickListener= diaryEntry -> adapter.openFragment(getContext(), diaryEntry, getLayoutInflater());
+                        adapter.setItemClickListener(itemClickListener);
+                        recycler.setAdapter(adapter);
+                        adapter.setItems(diaryEntryList);
+                    });
+        });
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                return makeMovementFlags(0,ItemTouchHelper.START);
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                Date date = diaryEntryList.get(position).getDate();
+                firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
+                    fb.collection("Users")
+                            .document(userId)
+                            .collection("Entry")
+                            .whereEqualTo("date", date)
+                            .get()
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        document.getReference().delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void unused) {
+                                                adapter.deleteItem(position);
+                                            }
+                                        });
+
+                                    }
+
+                                }
+                            });
+                });
+
+
+            }
         });
 
+        helper.attachToRecyclerView(binding.recyclerView);
 
-
-//        binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-//            @Override
-//            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-//                if (menuItem.getItemId() == R.id.bottom_settings) {
-//                    replaceFragment.replaceFragment(fragmentManager,new SettingsFragment());
-//                } else if (menuItem.getItemId() == R.id.bottom_emotionDiary) {
-//                    replaceFragment.replaceFragment(fragmentManager,new EmotionDiaryFragment());
-//                } else if (menuItem.getItemId() == R.id.bottom_timer) {
-//                    ((OnHideFragmentContainerListener)getActivity()).onButtonTimerClick();
-//                    getActivity().getSupportFragmentManager().beginTransaction().remove(ProfileFragment.this).commit();
-//                } else if (menuItem.getItemId() == R.id.bottom_sound) {
-//                    replaceFragment.replaceFragment(fragmentManager,new SoundFragment());
-//                } else if (menuItem.getItemId() == R.id.bottom_profile) {
-//                    replaceFragment.replaceFragment(fragmentManager, new ProfileFragment());
-//                }
-//
-//
-//                return false;
-//            }
-//        });
         return view;
     }
 
@@ -123,7 +146,13 @@ public class ProfileFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
-        // TODO: Use the ViewModel
+        mViewModel.getDiaryEntries().observe(getViewLifecycleOwner(), diaryEntries -> {
+            if (diaryEntries != null && !diaryEntries.isEmpty()) {
+                adapter.setItems(diaryEntries);
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
+
 
 }
