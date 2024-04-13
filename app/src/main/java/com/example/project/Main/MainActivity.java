@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -91,15 +92,12 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         binding.bottomNavigationView.setOnItemSelectedListener(menuItem -> {
             if (menuItem.getItemId() == R.id.bottom_emotionDiary) {
                 EmotionDiaryFragment emotionDiaryFragment = new EmotionDiaryFragment();
-//                emotionDiaryFragment.setOnHideFragmentContainerListener(() -> binding.fragmentView.setVisibility(View.GONE));
                 replaceFragment(new EmotionDiaryFragment());
             } else if (menuItem.getItemId() == R.id.bottom_sound) {
                 SoundFragment soundFragment= new SoundFragment();
-//                soundFragment.setOnHideFragmentContainerListener(() -> binding.fragmentView.setVisibility(View.GONE));
                 replaceFragment(new SoundFragment());
             } else if (menuItem.getItemId() == R.id.bottom_profile) {
                 ProfileFragment profileFragment = new ProfileFragment();
-//                profileFragment.setOnHideFragmentContainerListener(() -> binding.fragmentView.setVisibility(View.GONE));
                 replaceFragment(profileFragment);
             }
             else if (menuItem.getItemId() == R.id.bottom_timer) {
@@ -186,6 +184,11 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 }));
 
     }
+    public void soundNotification(){
+        MediaPlayer mp ;
+        mp= MediaPlayer.create(this, R.raw.pap );
+        mp.start();
+    }
 
 
 
@@ -211,14 +214,24 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                     Toast.makeText(context, "null type", Toast.LENGTH_SHORT).show();
                 }
                 else if(currentType.isInterval() && porabotal){
-                    Timer(currentType.getTimeRest());
+                    try{
+                        Timer(currentType.getTimeRest());
+                    }catch(NullPointerException e){
+                        Toast.makeText(MainActivity.this, "Время отдыха 00", Toast.LENGTH_SHORT).show();
+                    }
+                    soundNotification();
                     porabotal=false;
-                    countRest++;
+                    countWork++;
                     binding.tvs.setText("Отдых");
                 } else if (currentType.isInterval()&&!porabotal){
-                    Timer(currentType.getTimeWork());
+                    try{
+                        Timer(currentType.getTimeWork());
+                    }catch(NullPointerException e){
+                        Toast.makeText(MainActivity.this, "Время работы 00", Toast.LENGTH_SHORT).show();
+                    }
+                    soundNotification();
                     porabotal=true;
-                    countWork++;
+                    countRest++;
                     binding.tvs.setText("Работа");
                 } else{
                     binding.tvTimer.setText("00:00:00");
@@ -240,7 +253,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         binding.fragment.setVisibility(View.GONE);
         addTypes(name,timeWork);
         getTypes();
-        binding.tvs.setText(name);
     }
     public void getTypes(){
         spisok = new Spisok(this , fb, mAuth.getCurrentUser());
@@ -281,7 +293,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         binding.fragment.setVisibility(View.GONE);
         addTypes(name, timeWork, timeRest);
         getTypes();
-        binding.tvs.setText(name);
     }
     public void AlertDilaog(){
         builder = new AlertDialog.Builder(this);
@@ -321,41 +332,36 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         if(!currentType.isInterval()){
             builder = new AlertDialog.Builder(this);
             long finishmillies= (milliesec-savemilliesec)/1000;
-            if(countRestartTimer>0){
-                finishmillies+=(restartTimerMillies/1000);
-            }
             long hour= finishmillies/3600;
             long minutes = (finishmillies-hour*3600)/60;
             long sec= (finishmillies-hour*3600-minutes*60);
             FocusMode focusMode = new FocusMode(currentType.getName(), hour, minutes, sec, currentType.isInterval());
+            countDownTimer=null;
+            savemilliesec=0;
+            porabotal=true;
             alertDialogEmotion(focusMode);
         }
         else {
             long workTime=0;
             long restTime=0;
-            if(countRestartTimer>0){
-                if(restartTimerMillies>0)
-                    workTime+=(restartTimerMillies/1000);
-                else if (restartRestMillies>0) {
-                    restTime+=(restartRestMillies/1000);
-                }
-            }
-
             if(porabotal){
                 workTime = countWork*currentType.getTimeWork()/1000+(currentType.getTimeWork()-savemilliesec)/1000;
                 restTime = countRest*currentType.getTimeRest()/1000;
             }
             else if(!porabotal){
                 workTime = countWork*currentType.getTimeWork()/1000;
-                restTime = countRest*currentType.getTimeRest()/1000+(currentType.getTimeWork()-savemilliesec)/1000;
+                restTime = countRest*currentType.getTimeRest()/1000+(currentType.getTimeRest()-savemilliesec)/1000;
             }
             long hours= workTime/3600;
             long minutes = (workTime-hours*3600)/60;
             long sec = (workTime-hours*3600-minutes*60);
             long hoursRest= restTime/3600;
-            long minutesRest = (restTime-hours*3600)/60;
-            long secRest = (restTime-hours*3600-minutes*60);
+            long minutesRest = (restTime-hoursRest*3600)/60;
+            long secRest = (restTime-hoursRest*3600-minutesRest*60);
             FocusMode focusMode = new FocusMode(currentType.getName(), hours, minutes, sec,hoursRest,minutesRest,secRest,countWork,countRest, currentType.isInterval() );
+            countDownTimer=null;
+            savemilliesec=0;
+            porabotal=true;
             alertDialogEmotion(focusMode);
         }
 
@@ -405,21 +411,10 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             NotificationHelper.sendNotification(this);
             countDownTimer.cancel();
             countRestartTimer++;
-            if(currentType.isInterval()&&porabotal){
-                restartRestMillies += currentType.getTimeRest()-savemilliesec;
-            }
-            else if(currentType.isInterval()&& !porabotal) {
-                restartTimerMillies+= currentType.getTimeWork()-savemilliesec;
-            }
-            else{
-                restartTimerMillies+= currentType.getTimeWork()-savemilliesec;
-            }
         }
 
 
     }
-
-
     @Override
     protected void onResume() {
         super.onResume();

@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.project.databinding.FragmentTimeRestBinding;
 
@@ -49,12 +50,16 @@ public class TimeRestFragment extends Fragment {
         binding.btnFragmentCreateType.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                long timeRest = (binding.fragmentTimePicker.getHour()*3600+binding.fragmentTimePicker.getMinute()*60)*1000;
-                try{
-                    ((post)getActivity()).postpost(name, timeWork, timeRest);
-                }catch (ClassCastException ignored){}
+                if(binding.fragmentTimePicker.getMinute()==0){
+                    Toast.makeText(getContext(), "Выбрано 0 минут", Toast.LENGTH_SHORT).show();
+                }else{
+                    long timeRest = (binding.fragmentTimePicker.getHour()*3600+binding.fragmentTimePicker.getMinute()*60)*1000;
+                    try{
+                        ((post)getActivity()).postpost(name, timeWork, timeRest);
+                    }catch (ClassCastException ignored){}
 
-                getActivity().getSupportFragmentManager().beginTransaction().remove(TimeRestFragment.this).commit();
+                    getActivity().getSupportFragmentManager().beginTransaction().remove(TimeRestFragment.this).commit();
+                }
             }
         });
 

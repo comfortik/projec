@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.project.R;
 import com.example.project.databinding.FragmentTimeWorkBinding;
@@ -51,30 +52,34 @@ public class TimeWorkFragment extends Fragment {
         binding.btnFragmentCreateType.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                long timeWork = (binding.fragmentTimePicker.getHour()*3600+binding.fragmentTimePicker.getMinute()*60)*1000;
-                try{
-                    ((post)getActivity()).postpost(name, timeWork);
-                }catch (ClassCastException ignored){}
+                if(binding.fragmentTimePicker.getMinute()==0){
+                    Toast.makeText(getContext(), "Выбрано 0 минут", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    long timeWork = (binding.fragmentTimePicker.getHour()*3600+binding.fragmentTimePicker.getMinute()*60)*1000;
+                    try{
+                        ((post)getActivity()).postpost(name, timeWork);
+                    }catch (ClassCastException ignored){}
 
-                getActivity().getSupportFragmentManager().beginTransaction().remove(TimeWorkFragment.this).commit();
-
+                    getActivity().getSupportFragmentManager().beginTransaction().remove(TimeWorkFragment.this).commit();
+                }
             }
         });
         binding.strelka.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                long timeWork = (binding.fragmentTimePicker.getHour()*3600+binding.fragmentTimePicker.getMinute()*60)*1000;
-                TimeRestFragment timeRestFragment= TimeRestFragment.newInstance(name, timeWork);
-                getActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragment, timeRestFragment)
-                        .addToBackStack(null)
-                        .commit();
-//                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-//                fragmentManager.beginTransaction()
-//                        .replace(R.id.fragment, fragmentTimeRest)
-//                        .addToBackStack(null)
-//                        .commit();
+                if(binding.fragmentTimePicker.getMinute()==0){
+                    Toast.makeText(getContext(), "Выбрано 0 минут", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    long timeWork = (binding.fragmentTimePicker.getHour()*3600+binding.fragmentTimePicker.getMinute()*60)*1000;
+                    TimeRestFragment timeRestFragment= TimeRestFragment.newInstance(name, timeWork);
+                    getActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment, timeRestFragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
             }
         });
         binding.strelkaBack.setOnClickListener(new View.OnClickListener() {
