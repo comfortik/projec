@@ -9,8 +9,10 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -87,11 +89,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         }
         binding.bottomNavigationView.setSelectedItemId(R.id.bottom_timer);
         binding.bottomNavigationView.setOnItemSelectedListener(menuItem -> {
-            if (menuItem.getItemId() == R.id.bottom_settings) {
-                SettingsFragment settingsFragment = new SettingsFragment();
-//                settingsFragment.setOnHideFragmentContainerListener(() -> binding.bottomNavigationView.setVisibility(View.GONE));
-                replaceFragment(new SettingsFragment());
-            } else if (menuItem.getItemId() == R.id.bottom_emotionDiary) {
+            if (menuItem.getItemId() == R.id.bottom_emotionDiary) {
                 EmotionDiaryFragment emotionDiaryFragment = new EmotionDiaryFragment();
 //                emotionDiaryFragment.setOnHideFragmentContainerListener(() -> binding.fragmentView.setVisibility(View.GONE));
                 replaceFragment(new EmotionDiaryFragment());
@@ -110,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
 
             return true;
         });
+
+
 
 
         binding.btnTimer.setOnClickListener(v -> {
@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             if (countDownTimer != null) {
                 countDownTimer.cancel();
             }
+
             binding.tvTimer.setText("00:00:00");
             countWork=0;
             countRest=0;
@@ -149,27 +150,12 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         });
 
 
+
         binding.btnTimerCancel.setOnClickListener(v -> {
                 cancelButton=true;
                 countDownTimer.cancel();
                 binding.tvTimer.setText("00:00:00");
                 finishTimer();
-        });
-        ItemTouchHelper helper= new ItemTouchHelper(new ItemTouchHelper.Callback() {
-            @Override
-            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-                return makeMovementFlags(0, ItemTouchHelper.START);
-            }
-
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-
-            }
         });
 
 
@@ -300,21 +286,34 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     public void AlertDilaog(){
         builder = new AlertDialog.Builder(this);
         builder.setTitle("Подтверждение")
-                .setMessage("Вы точно хотите остановить таймер?")
+                .setMessage("Вы хотите удалить ?")
                 .setCancelable(true)
                 .setPositiveButton("Да", (dialog, which) -> {
-                    countDownTimer.cancel();
-                    binding.tvTimer.setText("00:00:00");
-                    binding.btnTimer.setVisibility(View.VISIBLE);
-                    binding.ll.setVisibility(View.GONE);
-                    finishTimer();
+                    dialog.cancel();
                 })
                 .setNegativeButton("Нет ", (dialog, which) -> {
-                    Timer(savemilliesec);
                     dialog.cancel();
                 })
                 .show();
     }
+//    public void AlertDilaog(){
+//        builder = new AlertDialog.Builder(this);
+//        builder.setTitle("Подтверждение")
+//                .setMessage("Вы точно хотите остановить таймер?")
+//                .setCancelable(true)
+//                .setPositiveButton("Да", (dialog, which) -> {
+//                    countDownTimer.cancel();
+//                    binding.tvTimer.setText("00:00:00");
+//                    binding.btnTimer.setVisibility(View.VISIBLE);
+//                    binding.ll.setVisibility(View.GONE);
+//                    finishTimer();
+//                })
+//                .setNegativeButton("Нет ", (dialog, which) -> {
+//                    Timer(savemilliesec);
+//                    dialog.cancel();
+//                })
+//                .show();
+//    }
 
     public void finishTimer(){
         binding.btnTimer.setVisibility(View.VISIBLE);

@@ -47,7 +47,7 @@ public class TimeWorkFragment extends Fragment {
             binding.strelka.setVisibility(View.GONE);
         }
         else binding.strelka.setVisibility(View.VISIBLE);
-        binding.tv.setText(name);
+
         binding.btnFragmentCreateType.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

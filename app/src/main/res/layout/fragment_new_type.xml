@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_gravity="center_vertical"
     android:layout_margin="12dp"
-    android:background="@color/background">
+    android:background="#B0BEC5">
     <EditText
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/etFragmentCreateType"
