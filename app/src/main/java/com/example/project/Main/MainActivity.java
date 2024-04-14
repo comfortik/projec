@@ -10,13 +10,9 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -24,8 +20,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project.Emotion.EmotionDiaryFragment;
 import com.example.project.Emotion.EmotionUtils;
@@ -34,7 +28,6 @@ import com.example.project.Emotion.ReactForEmotions;
 import com.example.project.OnHideFragmentContainerListener;
 import com.example.project.Profile.ProfileFragment;
 import com.example.project.R;
-import com.example.project.Settings.SettingsFragment;
 import com.example.project.Sounds.SoundFragment;
 import com.example.project.databinding.ActivityMainBinding;
 import com.example.project.databinding.FragmentEmotionDiaryBinding;
@@ -54,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     AlertDialog.Builder builder;
     public Type currentType;
     int countRest;
-    long restartRestMillies;
     int countWork ;
     Spisok spisok;
     private ActivityMainBinding binding;
@@ -62,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     FirebaseAuth mAuth;
     FirestoreGetId firestoreGetId;
     AddUserToFirebase add;
-    long restartTimerMillies=0;
     int countRestartTimer;
     Context context = MainActivity.this;
 
@@ -71,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
-//        setContentView(binding.getRoot());
         View customLoadingView = getLayoutInflater().inflate(R.layout.splash_screen, null);
         setContentView(customLoadingView);
 
@@ -91,14 +81,11 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         binding.bottomNavigationView.setSelectedItemId(R.id.bottom_timer);
         binding.bottomNavigationView.setOnItemSelectedListener(menuItem -> {
             if (menuItem.getItemId() == R.id.bottom_emotionDiary) {
-                EmotionDiaryFragment emotionDiaryFragment = new EmotionDiaryFragment();
                 replaceFragment(new EmotionDiaryFragment());
             } else if (menuItem.getItemId() == R.id.bottom_sound) {
-                SoundFragment soundFragment= new SoundFragment();
                 replaceFragment(new SoundFragment());
             } else if (menuItem.getItemId() == R.id.bottom_profile) {
-                ProfileFragment profileFragment = new ProfileFragment();
-                replaceFragment(profileFragment);
+                replaceFragment(new ProfileFragment());
             }
             else if (menuItem.getItemId() == R.id.bottom_timer) {
                 binding.mainlayout.setVisibility(View.VISIBLE);
@@ -113,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         binding.btnTimer.setOnClickListener(v -> {
             countWork= 0;
             countRest=0;
-            restartTimerMillies=0;
             countRestartTimer=0;
             porabotal= true;
             if (countDownTimer != null) {
@@ -133,7 +119,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 countDownTimer.cancel();
             }
 
-            binding.tvTimer.setText("00:00:00");
             countWork=0;
             countRest=0;
             binding.btnTimer.setVisibility(View.VISIBLE);
@@ -144,11 +129,9 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 Toast.makeText(MainActivity.this, binding.filliedExposed.getText().toString(),Toast.LENGTH_SHORT).show();
                 String selectedTypeName = parent.getItemAtPosition(position).toString();
                 loadTypeFromFirestore(selectedTypeName);
+
             }
         });
-
-
-
         binding.btnTimerCancel.setOnClickListener(v -> {
                 cancelButton=true;
                 countDownTimer.cancel();
@@ -177,6 +160,12 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                         Type type = documentSnapshot.toObject(Type.class);
                         milliesec=type.getTimeWork();
                         currentType=type;
+                        NumberFormat f = new DecimalFormat("00");
+                        long totalSeconds = milliesec / 1000;
+                        long hour = totalSeconds / 3600;
+                        long min = (totalSeconds % 3600) / 60;
+                        long sec = totalSeconds % 60;
+                        binding.tvTimer.setText(f.format(hour) + ":" + f.format(min) + ":" + f.format(sec));
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -265,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     }
 
     public void addTypes(String name, long timeWork, long timeRest){
-        firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId1 -> {
+        firestoreGetId.getId(Objects.requireNonNull(mAuth.getCurrentUser()).getUid(), userId1 -> {
             if(userId1!=null){
                 fb.collection("Users")
                         .document(userId1)
@@ -279,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         });
     }
     public void addTypes(String name, long timeWork){
-        firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId1 -> fb.collection("Users")
+        firestoreGetId.getId(Objects.requireNonNull(mAuth.getCurrentUser()).getUid(), userId1 -> fb.collection("Users")
                 .document(userId1)
                 .collection("Types")
                 .add(new Type(name, timeWork))
@@ -299,12 +288,8 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         builder.setTitle("Подтверждение")
                 .setMessage("Вы хотите удалить ?")
                 .setCancelable(true)
-                .setPositiveButton("Да", (dialog, which) -> {
-                    dialog.cancel();
-                })
-                .setNegativeButton("Нет ", (dialog, which) -> {
-                    dialog.cancel();
-                })
+                .setPositiveButton("Да", (dialog, which) -> dialog.cancel())
+                .setNegativeButton("Нет ", (dialog, which) -> dialog.cancel())
                 .show();
     }
 //    public void AlertDilaog(){
@@ -401,7 +386,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     protected void onDestroy() {
         super.onDestroy();
         SoundFragment soundFragment = new SoundFragment();
-        soundFragment.stopMedia();
+        soundFragment.releaseMedia();
     }
 
     @Override

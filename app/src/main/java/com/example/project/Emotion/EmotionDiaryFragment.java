@@ -1,30 +1,20 @@
 package com.example.project.Emotion;
 
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.project.Main.FirestoreGetId;
 import com.example.project.OnHideFragmentContainerListener;
 import com.example.project.OnNote;
-import com.example.project.Profile.ProfileFragment;
-import com.example.project.R;
-import com.example.project.ReplaceFragment;
-import com.example.project.Settings.SettingsFragment;
-import com.example.project.Sounds.SoundFragment;
 import com.example.project.databinding.FragmentEmotionDiaryBinding;
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -37,7 +27,6 @@ public class EmotionDiaryFragment extends Fragment {
     FirebaseFirestore fb;
     FirebaseAuth mAuth;
     FirebaseUser user;
-    AlertDialog.Builder builder;
 
     ReactForEmotions reactForEmotions;
     FirestoreEmotion firestoreEmotion;
@@ -54,22 +43,11 @@ public class EmotionDiaryFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         reactForEmotions = new ReactForEmotions();
-        FirestoreGetId firestoreGetId = new FirestoreGetId(fb);
         firestoreEmotion = new FirestoreEmotion(getActivity(), fb, user);
         EmotionUtils emotionUtils = new EmotionUtils(firestoreEmotion, reactForEmotions);
         emotionUtils.setListeners(getActivity(), binding);
-        emotionUtils.setOnNote(new OnNote() {
-            @Override
-            public void onNote(Emotion emotion) {
-                emotionUtils.alertNote(getActivity(), getActivity().getLayoutInflater(), fb, mAuth, null, emotion);
-            }
-        });
-        emotionUtils.setOnCloseDialogEmotionListener(new OnCloseDialogEmotionListener() {
-            @Override
-            public void onHideDialog(Emotion emotion) {
-                emotionUtils.alertEmotion(fb, mAuth, null, emotion);
-            }
-        });
+        emotionUtils.setOnNote(emotion -> emotionUtils.alertNote(getActivity(), getActivity().getLayoutInflater(), fb, mAuth, null, emotion));
+        emotionUtils.setOnCloseDialogEmotionListener(emotion -> emotionUtils.alertEmotion(fb, mAuth, null, emotion));
 
 
 

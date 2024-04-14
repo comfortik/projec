@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,15 +28,15 @@ import com.example.project.Settings.SettingsFragment;
 import com.example.project.databinding.FragmentSoundBinding;
 import com.google.android.material.navigation.NavigationBarView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SoundFragment extends Fragment {
 
     private SoundViewModel mViewModel;
     FragmentSoundBinding binding;
-    private OnHideFragmentContainerListener hideFragmentContainerListener;
-    private MediaPlayer mediaPlayer1, mediaPlayer2, mediaPlayer3, mediaPlayer4;
-
-
-
+    SoundAdapter soundAdapter;
+    List<Sound> soundList;
 
     public static SoundFragment newInstance() {
         return new SoundFragment();
@@ -44,195 +45,30 @@ public class SoundFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding = FragmentSoundBinding.inflate(inflater, container, false);
+        binding= FragmentSoundBinding.inflate(inflater, null, false);
         View view = binding.getRoot();
-        Context context= getContext();
-        mediaPlayer1 = MediaPlayer.create(context, R.raw.sound1);
-        mediaPlayer2 = MediaPlayer.create(context, R.raw.sound1);
-        mediaPlayer3 = MediaPlayer.create(context, R.raw.sound1);
-        mediaPlayer4 = MediaPlayer.create(context, R.raw.sound1);
+        soundList = new ArrayList<>();
+        soundList.add(new Sound(MediaPlayer.create(getContext(), R.raw.sound1), "Сверчки", R.drawable.ic_launcher_background ));
+        soundList.add(new Sound(MediaPlayer.create(getContext(), R.raw.sound2), "Звуки волн", R.drawable.ic_launcher_background));
+        soundList.add(new Sound(MediaPlayer.create(getContext(), R.raw.sound3), "Sound 3", R.drawable.ic_launcher_background));
+        soundList.add(new Sound(MediaPlayer.create(getContext(), R.raw.sound4), "Sound 4", R.drawable.ic_launcher_background));
+        soundAdapter = new SoundAdapter(soundList);
+        binding.recycler.setAdapter(soundAdapter);
 
-
-        binding.buttonSound1.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (mediaPlayer1 != null) {
-                    if (mediaPlayer1.isPlaying()) {
-                        mediaPlayer1.stop();
-                        mediaPlayer1.release();
-                        mediaPlayer1 = null;
-                    } else {
-                        mediaPlayer1 = MediaPlayer.create(context, R.raw.sound1);
-                        mediaPlayer1.start();
-                    }
-                } else {
-                    mediaPlayer1 = MediaPlayer.create(context, R.raw.sound1);
-                    mediaPlayer1.start();
-                }
-
-            }
-        });
-        binding.buttonSound2.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (mediaPlayer2 != null) {
-                    if (mediaPlayer2.isPlaying()) {
-                        mediaPlayer2.stop();
-                        mediaPlayer2.release();
-                        mediaPlayer2 = null;
-                    } else {
-                        mediaPlayer2 = MediaPlayer.create(context, R.raw.sound2);
-                        mediaPlayer2.start();
-                    }
-                } else {
-                    mediaPlayer2 = MediaPlayer.create(context, R.raw.sound2);
-                    mediaPlayer2.start();
+        binding.btn.setOnClickListener(v -> {
+            for (Sound sound : soundList) {
+                MediaPlayer mediaPlayer = sound.getMediaPlayer();
+                if (mediaPlayer.isPlaying()) {
+                    sound.getMediaPlayer().pause();
+                    sound.getMediaPlayer().seekTo(0);
                 }
             }
-        });
-        binding.buttonSound3.setOnClickListener(new View.OnClickListener() {
+            soundAdapter.resetSeekBars();
+            soundAdapter.notifyDataSetChanged();
 
-            @Override
-            public void onClick(View v) {
-                if (mediaPlayer3 != null) {
-                    if (mediaPlayer3.isPlaying()) {
-                        mediaPlayer3.stop();
-                        mediaPlayer3.release();
-                        mediaPlayer3 = null;
-                    } else {
-                        mediaPlayer3 = MediaPlayer.create(context, R.raw.sound3);
-                        mediaPlayer3.start();
-                    }
-                } else {
-                    mediaPlayer3 = MediaPlayer.create(context, R.raw.sound3);
-                    mediaPlayer3.start();
-                }
-            }
-        });
-        binding.buttonSound4.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (mediaPlayer4 != null) {
-                    if (mediaPlayer4.isPlaying()) {
-                        mediaPlayer4.stop();
-                        mediaPlayer4.release();
-                        mediaPlayer4 = null;
-                    } else {
-                        mediaPlayer4 = MediaPlayer.create(context, R.raw.sound4);
-                        mediaPlayer4.start();
-                    }
-                } else {
-                    mediaPlayer4 = MediaPlayer.create(context, R.raw.sound4);
-                    mediaPlayer4.start();
-                }
-            }
-        });
-        binding.seekbarVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(progress!=0) {
-                    float volume = progress / 100f;
-                    mediaPlayer1.setVolume(volume, volume);
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        binding.seekbarVolume2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(progress!=0) {
-                    float volume = progress / 100f;
-                    mediaPlayer2.setVolume(volume, volume);
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        binding.seekbarVolume3.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(progress!=0) {
-                    float volume = progress / 100f;
-                    mediaPlayer3.setVolume(volume, volume);
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        binding.seekbarVolume4.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(progress!=0){
-                    float volume = progress/100f;
-                    mediaPlayer4.setVolume(volume, volume);
-                }
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
         });
 
-
-
-
-
-        return view ;
-    }
-    public void stopMedia(){
-        if(mediaPlayer1!=null){
-            mediaPlayer1.stop();
-            mediaPlayer1.release();
-        }
-        if(mediaPlayer2!=null){
-            mediaPlayer2.stop();
-            mediaPlayer2.release();
-        }
-        if(mediaPlayer3!=null){
-            mediaPlayer3.stop();
-            mediaPlayer3.release();
-        }
-        if(mediaPlayer4!=null){
-            mediaPlayer4.stop();
-            mediaPlayer4.release();
-        }
-
-
+        return view;
     }
 
     @Override
@@ -241,8 +77,11 @@ public class SoundFragment extends Fragment {
         mViewModel = new ViewModelProvider(this).get(SoundViewModel.class);
         // TODO: Use the ViewModel
     }
-    public void setOnHideFragmentContainerListener(OnHideFragmentContainerListener listener) {
-        this.hideFragmentContainerListener = listener;
+    public void releaseMedia(){
+        for (int i=0; i<soundList.size(); i++){
+            soundList.get(i).getMediaPlayer().release();
+        }
     }
+
 
 }
