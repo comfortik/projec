@@ -25,7 +25,8 @@
         <FrameLayout
             android:id="@+id/fragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:visibility="gone"/>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -37,11 +38,12 @@
             <AutoCompleteTextView
                 android:id="@+id/fillied_exposed"
                 android:layout_width="match_parent"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
+                android:fontFamily="monospace"
                 android:layout_marginHorizontal="12dp"
                 android:layout_height="wrap_content"
                 android:inputType="none" />
-
-
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -74,7 +76,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
                 android:fontFamily="monospace"
-                android:text="Start" />
+                app:cornerRadius="5dp"
+                android:text="Старт" />
 
             <LinearLayout
                 android:id="@+id/ll"
@@ -90,8 +93,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="12dp"
+                    app:cornerRadius="5dp"
                     android:fontFamily="monospace"
-                    android:text="Cancel" />
+                    android:text="Отмена" />
 
             </LinearLayout>
 

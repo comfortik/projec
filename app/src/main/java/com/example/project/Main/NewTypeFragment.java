@@ -53,8 +53,9 @@ public class NewTypeFragment extends Fragment {
                             if (!queryDocumentSnapshots.isEmpty()) {
                                 CharSequence s= "asdasdas";
                                 Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
-                            }
-                            else{
+                            } else if (binding.etFragmentCreateType.getText().toString().isEmpty()) {
+                                Toast.makeText(getContext(), "Введите текст", Toast.LENGTH_SHORT).show();
+                            } else{
                                 newName= binding.etFragmentCreateType.getText().toString();
                                 ChooseFragment chooseFragment = ChooseFragment.newInstance(newName);
                                 getActivity().getSupportFragmentManager()

@@ -96,6 +96,8 @@ public class ProfileHolder extends RecyclerView.ViewHolder {
             case 4:
                 binding.imageView.setBackgroundResource(R.drawable.ic_launcher_background);
                 break;
+            case 5:
+                binding.imageView.setBackgroundResource(R.drawable.ic_launcher_background);
 
 
         }

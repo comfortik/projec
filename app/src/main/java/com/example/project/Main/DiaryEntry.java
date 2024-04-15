@@ -48,7 +48,6 @@ public class DiaryEntry {
 
     public DiaryEntry(FocusMode focusMode, Emotion emotion) {
         id =1;
-
         date = new Date();
         this.focusMode = focusMode;
         this.emotion = emotion;

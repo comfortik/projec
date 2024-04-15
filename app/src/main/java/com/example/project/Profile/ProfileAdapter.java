@@ -59,6 +59,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileHolder> {
         AlertDialog alertDialog;
         AlertDialog.Builder builder= new AlertDialog.Builder(context);
         binding= FragmentDiaryEntryBinding.inflate(layoutInflater, null , false);
+        binding.layout.setClipToOutline(true);
         switch (diaryEntry.getId()){
             case 1:
                 if(diaryEntry.getFocusMode().isInterval()){

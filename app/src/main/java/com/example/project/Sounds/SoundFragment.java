@@ -4,6 +4,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
@@ -52,9 +53,8 @@ public class SoundFragment extends Fragment {
         soundList.add(new Sound(MediaPlayer.create(getContext(), R.raw.sound2), "Звуки волн", R.drawable.ic_launcher_background));
         soundList.add(new Sound(MediaPlayer.create(getContext(), R.raw.sound3), "Sound 3", R.drawable.ic_launcher_background));
         soundList.add(new Sound(MediaPlayer.create(getContext(), R.raw.sound4), "Sound 4", R.drawable.ic_launcher_background));
-        soundAdapter = new SoundAdapter(soundList);
+        soundAdapter = new SoundAdapter(soundList, getContext());
         binding.recycler.setAdapter(soundAdapter);
-
         binding.btn.setOnClickListener(v -> {
             for (Sound sound : soundList) {
                 MediaPlayer mediaPlayer = sound.getMediaPlayer();

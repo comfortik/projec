@@ -69,7 +69,6 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
         RecyclerView recycler = view.findViewById(R.id.recyclerView);
-
         firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
             fb.collection("Users")
                     .document(userId)

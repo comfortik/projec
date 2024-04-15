@@ -52,7 +52,7 @@ public class Spisok {
                                     else typeInterval[i] = "N";
                                 }
                                 typeName[types.size()] = "Создать свой режим";
-                                typeInterval[types.size()]="a";
+                                typeInterval[types.size()]="";
                                 CustomAdapter adapter = new CustomAdapter(context, typeName, typeInterval);
                                 listener.onDataLoaded(adapter);
                             }
@@ -60,7 +60,7 @@ public class Spisok {
             } else {
                 typeName = new String[1];
                 typeName[0] = "Создать новый режим";
-                typeInterval[0] = "a";
+                typeInterval[0] = "";
                 CustomAdapter adapter = new CustomAdapter(context, typeName, typeInterval);
                 listener.onDataLoaded(adapter);
             }

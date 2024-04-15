@@ -64,14 +64,13 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         binding = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
         View customLoadingView = getLayoutInflater().inflate(R.layout.splash_screen, null);
         setContentView(customLoadingView);
-
         fb = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         add= new AddUserToFirebase(this, fb, mAuth);
         add.anonimouseSignUp();
         firestoreGetId = new FirestoreGetId(fb);
         add.setOnAddUserToFirestore(this::getTypes);
-
+        binding.filliedExposed.setDropDownBackgroundResource(R.drawable.png);
         final int NOTIFICATION_PERMISSION_CODE = 123;
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -105,13 +104,16 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             if (countDownTimer != null) {
                 countDownTimer.cancel();
             }
-            binding.tvs.setText("Работа");
-            binding.btnTimer.setVisibility(View.GONE);
-            binding.ll.setVisibility(View.VISIBLE);
-            if(milliesec==0){Toast.makeText(context, "Выбранный тип фокусировки 00", Toast.LENGTH_SHORT).show();
-            binding.btnTimer.setVisibility(View.VISIBLE);
-            binding.ll.setVisibility(View.GONE);}
-            else{Timer(milliesec);}
+            if (currentType != null) {
+                binding.tvs.setText("Работа");
+                binding.btnTimer.setVisibility(View.GONE);
+                binding.ll.setVisibility(View.VISIBLE);
+                if(milliesec==0){Toast.makeText(context, "Выбранный тип фокусировки 00", Toast.LENGTH_SHORT).show();
+                    binding.btnTimer.setVisibility(View.VISIBLE);
+                    binding.ll.setVisibility(View.GONE);}
+                else{Timer(milliesec);}
+            }
+
 
         });
         binding.filliedExposed.setOnItemClickListener((parent, view, position, id) -> {
@@ -171,11 +173,10 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 .addOnFailureListener(e -> {
                     // Обработка ошибки получения данных из Firestore
                 }));
-
     }
     public void soundNotification(){
         MediaPlayer mp ;
-        mp= MediaPlayer.create(this, R.raw.pap );
+        mp= MediaPlayer.create(this, R.raw.pap);
         mp.start();
     }
 
@@ -239,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     }
 
     public void postpost(String name, long timeWork){
+        binding.filliedExposed.setText(null);
         binding.fragment.setVisibility(View.GONE);
         addTypes(name,timeWork);
         getTypes();
@@ -280,6 +282,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
 
     public void postpost(String name, long timeWork, long timeRest){
         binding.fragment.setVisibility(View.GONE);
+        binding.filliedExposed.setText(null);
         addTypes(name, timeWork, timeRest);
         getTypes();
     }
@@ -312,11 +315,13 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
 //    }
 
     public void finishTimer(){
+        binding.filliedExposed.setText(null);
         binding.btnTimer.setVisibility(View.VISIBLE);
         binding.ll.setVisibility(View.GONE);
         if(!currentType.isInterval()){
             builder = new AlertDialog.Builder(this);
             long finishmillies= (milliesec-savemilliesec)/1000;
+            finishmillies+=1;
             long hour= finishmillies/3600;
             long minutes = (finishmillies-hour*3600)/60;
             long sec= (finishmillies-hour*3600-minutes*60);
@@ -327,15 +332,15 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             alertDialogEmotion(focusMode);
         }
         else {
-            long workTime=0;
-            long restTime=0;
+            long workTime=1;
+            long restTime=1;
             if(porabotal){
-                workTime = countWork*currentType.getTimeWork()/1000+(currentType.getTimeWork()-savemilliesec)/1000;
-                restTime = countRest*currentType.getTimeRest()/1000;
+                workTime += countWork*currentType.getTimeWork()/1000+(currentType.getTimeWork()-savemilliesec)/1000;
+                restTime += countRest*currentType.getTimeRest()/1000;
             }
             else if(!porabotal){
-                workTime = countWork*currentType.getTimeWork()/1000;
-                restTime = countRest*currentType.getTimeRest()/1000+(currentType.getTimeRest()-savemilliesec)/1000;
+                workTime += countWork*currentType.getTimeWork()/1000;
+                restTime += countRest*currentType.getTimeRest()/1000+(currentType.getTimeRest()-savemilliesec)/1000;
             }
             long hours= workTime/3600;
             long minutes = (workTime-hours*3600)/60;
