@@ -100,7 +100,9 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileHolder> {
                 break;
         }
         View view = binding.getRoot();
+
         alertDialog= builder.setView(view).show();
+        alertDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         binding.btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
