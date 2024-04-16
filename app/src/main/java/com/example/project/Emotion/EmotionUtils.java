@@ -21,7 +21,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Objects;
 
 public class EmotionUtils {
-     FirestoreEmotion firestoreEmotion;
      ReactForEmotions reactForEmotions;
      OnNote onNote;
     DiaryEntry diaryEntry;
@@ -31,8 +30,7 @@ public class EmotionUtils {
         this.onCloseDialogEmotionListener = listener;
     }
 
-    public EmotionUtils(FirestoreEmotion firestoreEmotion, ReactForEmotions reactForEmotions) {
-        this.firestoreEmotion = firestoreEmotion;
+    public EmotionUtils( ReactForEmotions reactForEmotions) {
         this.reactForEmotions = reactForEmotions;
     }
 

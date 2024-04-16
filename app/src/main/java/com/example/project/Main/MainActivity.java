@@ -23,7 +23,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.project.Emotion.EmotionDiaryFragment;
 import com.example.project.Emotion.EmotionUtils;
-import com.example.project.Emotion.FirestoreEmotion;
 import com.example.project.Emotion.ReactForEmotions;
 import com.example.project.OnHideFragmentContainerListener;
 import com.example.project.Profile.ProfileFragment;
@@ -363,8 +362,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         FragmentEmotionDiaryBinding binding1 = FragmentEmotionDiaryBinding.inflate(getLayoutInflater(), null, false);
         View view = binding1.getRoot();
         ReactForEmotions reactForEmotions = new ReactForEmotions();
-        FirestoreEmotion firestoreEmotion = new FirestoreEmotion(this, fb, mAuth.getCurrentUser());
-        EmotionUtils emotionUtils = new EmotionUtils(firestoreEmotion, reactForEmotions);
+        EmotionUtils emotionUtils = new EmotionUtils(reactForEmotions);
         emotionUtils.setListeners(this, binding1);
         builder1.setCancelable(false);
         dialog = builder1.setView(view).show();

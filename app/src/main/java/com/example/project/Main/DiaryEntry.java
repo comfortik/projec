@@ -3,11 +3,8 @@ package com.example.project.Main;
 import com.example.project.Emotion.Emotion;
 import com.example.project.Note.Note;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
-
-import javax.security.auth.callback.Callback;
 
 public class DiaryEntry {
     Note note;

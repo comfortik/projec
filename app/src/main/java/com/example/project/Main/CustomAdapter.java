@@ -17,16 +17,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomAdapter extends ArrayAdapter<String> {
-    public String[] items;
-    public String[] intervals;
-    public CustomAdapter(Context context, String[] items, String[] intervals) {
+    private String[] items;
+    private String[] intervals;
+    private String[] timeWork;
+    private String [] timeRest;
+
+    public CustomAdapter(Context context, String[] items, String[] intervals, String[] timeWork, String [] timeRest) {
         super(context, R.layout.drop_down_item, items);
         if (items != null && intervals != null && items.length == intervals.length) {
             this.items = items;
             this.intervals = intervals;
+            this.timeRest=timeRest;
+            this.timeWork= timeWork;
         } else  {
             this.items = new String[1];
             this.intervals = new String[1];
+            this.timeWork=new String[1];
+            this.timeRest = new String[1];
         }
     }
 
@@ -39,9 +46,12 @@ public class CustomAdapter extends ArrayAdapter<String> {
 
         TextView mainText = convertView.findViewById(R.id.mainText);
         TextView sideSimbol = convertView.findViewById(R.id.sideSymbol);
-
+        TextView timeWor = convertView.findViewById(R.id.timeWork);
+        TextView timeRes = convertView.findViewById(R.id.timeRest);
         mainText.setText(items[position]);
         sideSimbol.setText(intervals[position]);
+        timeWor.setText(timeWork[position]);
+        timeRes.setText(timeRest[position]);
         return convertView;
     }
 }
