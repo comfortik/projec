@@ -2,6 +2,8 @@ package com.example.project.Emotion;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,10 +84,10 @@ public class EmotionUtils {
     }
 
     private void AlertDialogEmotionDiary(Context context, AddUserToFirebase.HelpEmotion helpEmotion, Emotion emotion) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialogText);
         builder.setTitle(helpEmotion.getHelp())
+                .setTitle("")
                 .setMessage("Хочешь оставить заметку?")
-                .setCancelable(true)
                 .setCancelable(false)
                 .setPositiveButton("Да", (dialog, which) -> {
                     onNote.onNote(emotion);
@@ -94,9 +96,15 @@ public class EmotionUtils {
                 .setNegativeButton("Нет", (dialog, which) -> {
                     onCloseDialogEmotionListener.onHideDialog(emotion);
                     dialog.cancel();
-                })
-                .show();
+                });
 
+        GradientDrawable gradientDrawable = new GradientDrawable();
+        gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+        gradientDrawable.setColor(Color.parseColor("#90A4AE"));
+        gradientDrawable.setCornerRadius(10);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.getWindow().setBackgroundDrawable(gradientDrawable);
+        alertDialog.show();
     }
     public void alertEmotion(FirebaseFirestore fb, FirebaseAuth mAuth, FocusMode focusMode, Emotion emotion){
         FirestoreGetId  firestoreGetId = new FirestoreGetId(fb);

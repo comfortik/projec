@@ -6,6 +6,9 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -286,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         getTypes();
     }
     public void AlertDilaog(){
-        builder = new AlertDialog.Builder(this);
+        builder = new AlertDialog.Builder(this, R.style.AlertDialogText);
         countDownTimer.cancel();
         builder.setTitle("Подтверждение")
                 .setMessage("Вы точно хотите остановить таймер?")
@@ -300,8 +303,15 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 .setNegativeButton("Нет ", (dialog, which) -> {
                     Timer(savemilliesec);
                     dialog.cancel();
-                })
-                .show();
+                });
+        GradientDrawable gradientDrawable= new GradientDrawable();
+        gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+        gradientDrawable.setColor(Color.parseColor("#90A4AE"));
+        gradientDrawable.setCornerRadius(10);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.getWindow().setBackgroundDrawable(gradientDrawable);
+        alertDialog.show();
+
     }
     public FocusMode getHoursMinutesSeconds(long timeWork, long timeRest){
         if(timeRest==-1){

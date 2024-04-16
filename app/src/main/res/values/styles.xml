@@ -19,5 +19,9 @@
         <item name="marginHorizontal">12dp</item>
         <item name="android:clipToPadding">false</item>
     </style>
+    <style name="AlertDialogText" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:colorAccent">#0000FF</item>
+        <item name="fontFamily">monospace</item>
+    </style>
 
 </resources>
