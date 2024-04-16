@@ -13,6 +13,7 @@ import com.example.project.Main.FirestoreGetId;
 import com.example.project.Main.FocusMode;
 import com.example.project.Note.Note;
 import com.example.project.OnNote;
+import com.example.project.R;
 import com.example.project.databinding.AlertNoteBinding;
 import com.example.project.databinding.FragmentEmotionDiaryBinding;
 import com.google.firebase.auth.FirebaseAuth;

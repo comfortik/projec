@@ -112,12 +112,16 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                     binding.ll.setVisibility(View.GONE);}
                 else{Timer(milliesec);}
             }
+            else{
+                Toast.makeText(context, "бля", Toast.LENGTH_SHORT).show();
+            }
 
 
         });
         binding.filliedExposed.setOnItemClickListener((parent, view, position, id) -> {
             if (countDownTimer != null) {
                 countDownTimer.cancel();
+                finishTimer();
             }
 
             countWork=0;
@@ -133,12 +137,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
 
             }
         });
-        binding.btnTimerCancel.setOnClickListener(v -> {
-                cancelButton=true;
-                countDownTimer.cancel();
-                binding.tvTimer.setText("00:00:00");
-                finishTimer();
-        });
+        binding.btnTimerCancel.setOnClickListener(v -> AlertDilaog());
 
 
     }
@@ -224,6 +223,8 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                     binding.tvs.setText("Работа");
                 } else{
                     binding.tvTimer.setText("00:00:00");
+                    soundNotification();
+                    binding.filliedExposed.setText(null);
                     finishTimer();
                 }
             }
@@ -278,7 +279,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 }));
 
     }
-
     public void postpost(String name, long timeWork, long timeRest){
         binding.fragment.setVisibility(View.GONE);
         binding.filliedExposed.setText(null);
@@ -287,52 +287,62 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     }
     public void AlertDilaog(){
         builder = new AlertDialog.Builder(this);
+        countDownTimer.cancel();
         builder.setTitle("Подтверждение")
-                .setMessage("Вы хотите удалить ?")
+                .setMessage("Вы точно хотите остановить таймер?")
                 .setCancelable(true)
-                .setPositiveButton("Да", (dialog, which) -> dialog.cancel())
-                .setNegativeButton("Нет ", (dialog, which) -> dialog.cancel())
+                .setPositiveButton("Да", (dialog, which) -> {
+                    cancelButton=true;
+                    binding.tvTimer.setText("00:00:00");
+                    binding.filliedExposed.setText(null);
+                    finishTimer();
+                })
+                .setNegativeButton("Нет ", (dialog, which) -> {
+                    Timer(savemilliesec);
+                    dialog.cancel();
+                })
                 .show();
     }
-//    public void AlertDilaog(){
-//        builder = new AlertDialog.Builder(this);
-//        builder.setTitle("Подтверждение")
-//                .setMessage("Вы точно хотите остановить таймер?")
-//                .setCancelable(true)
-//                .setPositiveButton("Да", (dialog, which) -> {
-//                    countDownTimer.cancel();
-//                    binding.tvTimer.setText("00:00:00");
-//                    binding.btnTimer.setVisibility(View.VISIBLE);
-//                    binding.ll.setVisibility(View.GONE);
-//                    finishTimer();
-//                })
-//                .setNegativeButton("Нет ", (dialog, which) -> {
-//                    Timer(savemilliesec);
-//                    dialog.cancel();
-//                })
-//                .show();
-//    }
+    public FocusMode getHoursMinutesSeconds(long timeWork, long timeRest){
+        if(timeRest==-1){
+            timeWork+=1;
+            long hour= timeWork/3600;
+            long minutes = (timeWork-hour*3600)/60;
+            long sec= (timeWork-hour*3600-minutes*60);
+            FocusMode focusMode = new FocusMode(currentType.getName(), hour, minutes, sec, currentType.isInterval());
+            currentType=null;
+            return focusMode;
+        }
+        else{
+            long hours= timeWork/3600;
+            long minutes = (timeWork-hours*3600)/60;
+            long sec = (timeWork-hours*3600-minutes*60);
+            long hoursRest= timeRest/3600;
+            long minutesRest = (timeRest-hoursRest*3600)/60;
+            long secRest = (timeRest-hoursRest*3600-minutesRest*60);
+            FocusMode focusMode = new FocusMode(currentType.getName(), hours, minutes, sec,hoursRest,minutesRest,secRest,countWork,countRest, currentType.isInterval() );
+            currentType=null;
+            return focusMode;
+        }
+
+    }
 
     public void finishTimer(){
-        binding.filliedExposed.setText(null);
         binding.btnTimer.setVisibility(View.VISIBLE);
         binding.ll.setVisibility(View.GONE);
         if(!currentType.isInterval()){
             builder = new AlertDialog.Builder(this);
             long finishmillies= (milliesec-savemilliesec)/1000;
-            finishmillies+=1;
-            long hour= finishmillies/3600;
-            long minutes = (finishmillies-hour*3600)/60;
-            long sec= (finishmillies-hour*3600-minutes*60);
-            FocusMode focusMode = new FocusMode(currentType.getName(), hour, minutes, sec, currentType.isInterval());
             countDownTimer=null;
             savemilliesec=0;
             porabotal=true;
-            alertDialogEmotion(focusMode);
+            alertDialogEmotion(getHoursMinutesSeconds(finishmillies, -1));
         }
         else {
-            long workTime=1;
-            long restTime=1;
+            long workTime=0;
+            long restTime=0;
+            if (countWork>0)++workTime;
+            if(countRest>0) ++restTime;
             if(porabotal){
                 workTime += countWork*currentType.getTimeWork()/1000+(currentType.getTimeWork()-savemilliesec)/1000;
                 restTime += countRest*currentType.getTimeRest()/1000;
@@ -341,32 +351,26 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 workTime += countWork*currentType.getTimeWork()/1000;
                 restTime += countRest*currentType.getTimeRest()/1000+(currentType.getTimeRest()-savemilliesec)/1000;
             }
-            long hours= workTime/3600;
-            long minutes = (workTime-hours*3600)/60;
-            long sec = (workTime-hours*3600-minutes*60);
-            long hoursRest= restTime/3600;
-            long minutesRest = (restTime-hoursRest*3600)/60;
-            long secRest = (restTime-hoursRest*3600-minutesRest*60);
-            FocusMode focusMode = new FocusMode(currentType.getName(), hours, minutes, sec,hoursRest,minutesRest,secRest,countWork,countRest, currentType.isInterval() );
             countDownTimer=null;
             savemilliesec=0;
             porabotal=true;
-            alertDialogEmotion(focusMode);
+            alertDialogEmotion(getHoursMinutesSeconds(workTime, restTime));
         }
 
     }
-
     private void alertDialogEmotion(FocusMode focusMode){
         AlertDialog dialog;
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         FragmentEmotionDiaryBinding binding1 = FragmentEmotionDiaryBinding.inflate(getLayoutInflater(), null, false);
         View view = binding1.getRoot();
+
         ReactForEmotions reactForEmotions = new ReactForEmotions();
         EmotionUtils emotionUtils = new EmotionUtils(reactForEmotions);
         emotionUtils.setListeners(this, binding1);
         builder1.setCancelable(false);
         dialog = builder1.setView(view).show();
-
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        binding1.main.setBackgroundResource(R.drawable.alert_profile);
         emotionUtils.setOnCloseDialogEmotionListener(emotion -> {
             emotionUtils.alertEmotion(fb, mAuth, focusMode, emotion);
             dialog.cancel();
@@ -377,9 +381,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         });
 
     }
-
-
-
     @Override
     public void onButtonTimerClick() {
         binding.fragmentView.setVisibility(View.GONE);
