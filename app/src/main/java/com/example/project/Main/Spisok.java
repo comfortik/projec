@@ -42,6 +42,8 @@ public class Spisok {
                                 typeName[0] = "Создать новый режим";
                                 typeInterval = new String[1];
                                 typeInterval[0] = "";
+                                timeWorkList = new String[1];
+                                timeRestList = new String[1];
                                 timeWorkList[0]="";
                                 timeRestList[0]="";
                                 CustomAdapter adapter = new CustomAdapter(context, typeName, typeInterval, timeWorkList, timeRestList);
