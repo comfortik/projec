@@ -31,6 +31,7 @@ import com.example.project.OnHideFragmentContainerListener;
 import com.example.project.Profile.ProfileFragment;
 import com.example.project.R;
 import com.example.project.Sounds.SoundFragment;
+import com.example.project.Stata.StataFragment;
 import com.example.project.databinding.ActivityMainBinding;
 import com.example.project.databinding.FragmentEmotionDiaryBinding;
 import com.google.firebase.auth.FirebaseAuth;
@@ -87,10 +88,13 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 replaceFragment(new SoundFragment());
             } else if (menuItem.getItemId() == R.id.bottom_profile) {
                 replaceFragment(new ProfileFragment());
+            }else if(menuItem.getItemId()==R.id.bottom_stata){
+                replaceFragment(new StataFragment(fb, mAuth));
             }
             else if (menuItem.getItemId() == R.id.bottom_timer) {
                 binding.mainlayout.setVisibility(View.VISIBLE);
             }
+
 
             return true;
         });
