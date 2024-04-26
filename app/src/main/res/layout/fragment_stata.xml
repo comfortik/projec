@@ -7,7 +7,7 @@
     android:paddingVertical="12dp"
     tools:context=".Stata.StataFragment">
 
-        <com.github.mikephil.charting.charts.BarChart
+        <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/barChart"
             android:layout_width="match_parent"
             android:layout_height="0dp"

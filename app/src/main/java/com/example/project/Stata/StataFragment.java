@@ -22,6 +22,9 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -65,7 +68,7 @@ public class StataFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentStataBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
-        List<BarEntry> barEntriesDay = new ArrayList<>();
+        List<PieEntry> barEntriesDay = new ArrayList<>();
         int barWeek[] = new int[7];
         List<BarEntry> barEntriesWeek = new ArrayList<>();
         List<Entry> barEntriesMounth = new ArrayList<>();
@@ -141,43 +144,59 @@ public class StataFragment extends Fragment {
                         Collections.sort(diaryEntryListDay, Comparator.comparing(DiaryEntry::getDate));
                         Collections.sort(diaryEntryList, Comparator.comparing(DiaryEntry::getDate));
 
+                        List<Integer> colorsList = new ArrayList<>();
+
+                        for (int i = 0; i < diaryEntryListDay.size(); i++) {
+                            int emotionId = diaryEntryListDay.get(i).getEmotion().getId();
+                            int color = getColorForEmotionId(emotionId);
+                            colorsList.add(color);
+
+                            barEntriesDay.add(new PieEntry(emotionId));
+                        }
+
+                        PieDataSet barDataSetDay = new PieDataSet(barEntriesDay, "Today");
+                        barDataSetDay.setColors(colorsList);
+                        barDataSetDay.setSliceSpace(1f);
+                        barDataSetDay.setDrawValues(false);
+                        binding.barChart.getLegend().setEnabled(false);
+                        barDataSetDay.setDrawIcons(false);
+
+                        PieData barDataDay = new PieData(barDataSetDay);
+                        binding.barChart.setData(barDataDay);
+                        binding.barChart.invalidate();
+
+
+
+
+
+
+
+                        for(int i=0; i<barWeek.length;i++){
+                            barEntriesWeek.add(new BarEntry(i+1,barWeek[i]));
+                        }
                         binding.barChartWeek.getAxisLeft().setDrawLabels(false);
                         binding.barChartWeek.getAxisRight().setMaxWidth(5f);
                         binding.barChartWeek.getAxisRight().setGranularity(1f);
                         binding.barChartWeek.getAxisRight().setMinWidth(0f);
                         binding.barChartWeek.getAxisRight().setValueFormatter(new MyValueFormatter());
                         binding.barChartWeek.setDrawValueAboveBar(false);
-
-                        binding.barChartMounth.getAxisLeft().setDrawLabels(false);
-                        binding.barChartMounth.getAxisRight().setMaxWidth(5f);
-                        binding.barChartMounth.getAxisRight().setGranularity(1f);
-                        binding.barChartMounth.getAxisRight().setMinWidth(0f);
-                        binding.barChartMounth.getAxisRight().setValueFormatter(new MyValueFormatter());
-
-
-
-                        for(int i=0; i<diaryEntryListDay.size();i++){
-                            barEntriesDay.add(new BarEntry(i, diaryEntryListDay.get(i).getEmotion().getId()));
-                        }
-                        for(int i=0; i<barWeek.length;i++){
-                            barEntriesWeek.add(new BarEntry(i+1,barWeek[i]));
-                        }
-                        for(int i=0; i<diaryEntryListMounth.size();i++){
-                            barEntriesMounth.add(new Entry(i, diaryEntryListMounth.get(i).getEmotion().getId()));
-                        }
-                        BarDataSet barDataSetDay = new BarDataSet(barEntriesDay, "Emotions");
-                        BarData barDataDay = new BarData(barDataSetDay);
-                        barDataSetDay.setColor(Color.parseColor("#455A64"));
-                        barDataSetDay.setDrawValues(false);
-                        binding.barChart.setData(barDataDay);
-                        binding.barChart.invalidate();
-
                         BarDataSet barDataSetWeek = new BarDataSet(barEntriesWeek, "Week");
                         BarData barDataWeek = new BarData(barDataSetWeek);
                         barDataSetWeek.setColor(Color.parseColor("#455A64"));
                         barDataSetWeek.setDrawValues(false);
                         binding.barChartWeek.setData(barDataWeek);
                         binding.barChartWeek.invalidate();
+
+
+                        for(int i=0; i<diaryEntryListMounth.size();i++){
+                            barEntriesMounth.add(new Entry(i, diaryEntryListMounth.get(i).getEmotion().getId()));
+                        }
+
+                        binding.barChartMounth.getAxisLeft().setDrawLabels(false);
+                        binding.barChartMounth.getAxisRight().setMaxWidth(5f);
+                        binding.barChartMounth.getAxisRight().setGranularity(1f);
+                        binding.barChartMounth.getAxisRight().setMinWidth(0f);
+                        binding.barChartMounth.getAxisRight().setValueFormatter(new MyValueFormatter());
 
                         LineDataSet barDataSetMounth = new LineDataSet(barEntriesMounth, "Mounth");
                         LineData barDataMounth = new LineData(barDataSetMounth);
@@ -196,5 +215,21 @@ public class StataFragment extends Fragment {
 
 
         return view;
+    }
+    private int getColorForEmotionId(int emotionId) {
+        switch (emotionId) {
+            case 1:
+                return Color.parseColor("#455A64");
+            case 2:
+                return Color.parseColor("#607D8B");
+            case 3:
+                return Color.parseColor("#90A4AF");
+            case 4:
+                return Color.parseColor("#B0BEC5");
+            case 5:
+                return Color.parseColor("#90A4AC");
+            default:
+                return Color.BLACK;
+        }
     }
 }
