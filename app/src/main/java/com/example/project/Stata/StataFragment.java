@@ -135,10 +135,7 @@ public class StataFragment extends Fragment {
 
                                     }
                                 }
-
-
                             }
-
                         }
                         Collections.sort(diaryEntryListMounth, Comparator.comparing(DiaryEntry::getDate));
                         Collections.sort(diaryEntryListDay, Comparator.comparing(DiaryEntry::getDate));
