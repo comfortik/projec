@@ -16,6 +16,8 @@ import com.example.project.Profile.ItemClickListener;
 import com.example.project.Profile.ProfileAdapter;
 import com.example.project.R;
 import com.example.project.databinding.FragmentStataBinding;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -25,6 +27,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.MPPointF;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -63,13 +66,16 @@ public class StataFragment extends Fragment {
     }
     int mon, tue, wed, th, fri, sut, sun=0;
     int monId, tueId, wedId, thId,friId, sutId, sunId=0;
+    int one, two, three, four, five, all=0;
+    int barWeek[];
+    int pieDay[];
+    List<LegendEntry> legendEntries;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentStataBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
         List<PieEntry> barEntriesDay = new ArrayList<>();
-        int barWeek[] = new int[7];
         List<BarEntry> barEntriesWeek = new ArrayList<>();
         List<Entry> barEntriesMounth = new ArrayList<>();
         FirestoreGetId firestoreGetId = new FirestoreGetId(fb);
@@ -89,13 +95,38 @@ public class StataFragment extends Fragment {
                                 Date input = diaryEntry.getDate();
                                 LocalDate date = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                                 LocalDate today  = LocalDate.now();
-                                if(date.equals(today)){
-                                    diaryEntryListDay.add(diaryEntry);
+                                if (date.equals(today)) {
+                                    // diaryEntryListDay.add(diaryEntry);
+                                    int id = diaryEntry.getEmotion().getId();
+                                    pieDay = new int[5];
+                                    switch (id) {
+                                        case 1:
+                                            one++;
+                                            all++;
+                                            break;
+                                        case 2:
+                                            two++;
+                                            all++;
+                                            break;
+                                        case 3:
+                                            three++;
+                                            all++;
+                                            break;
+                                        case 4:
+                                            four++;
+                                            all++;
+                                            break;
+                                        case 5:
+                                            five++;
+                                            all++;
+                                            break;
+                                    }
                                 }
                                 if(date.isAfter(today.minusMonths(1))) diaryEntryListMounth.add(diaryEntry);
                                 if(date.isAfter(today.minusDays(7))){
                                     c.setTime(diaryEntry.getDate());
                                     int day= c.get(Calendar.DAY_OF_WEEK);
+                                    barWeek = new int[7];
                                     switch (day){
                                         case 1:
                                             mon++;
@@ -143,26 +174,83 @@ public class StataFragment extends Fragment {
 
                         List<Integer> colorsList = new ArrayList<>();
 
-                        for (int i = 0; i < diaryEntryListDay.size(); i++) {
-                            int emotionId = diaryEntryListDay.get(i).getEmotion().getId();
-                            int color = getColorForEmotionId(emotionId);
+//                        for (int i = 0; i < diaryEntryListDay.size(); i++) {
+//                            int emotionId = diaryEntryListDay.get(i).getEmotion().getId();
+//                            int color = getColorForEmotionId(emotionId);
+//                            colorsList.add(color);
+//
+//                            barEntriesDay.add(new PieEntry(emotionId));
+//                        }
+                        for (int i = 0; i < pieDay.length; i++) {
+                            int id = i + 1;
+                            int count = 0;
+                            switch (id) {
+                                case 1:
+                                    count = one;
+                                    break;
+                                case 2:
+                                    count = two;
+                                    break;
+                                case 3:
+                                    count = three;
+                                    break;
+                                case 4:
+                                    count = four;
+                                    break;
+                                case 5:
+                                    count = five;
+                                    break;
+                            }
+                            float percent = (float) count / all * 100;
+                            int color = getColorForEmotionId(id);
                             colorsList.add(color);
-
-                            barEntriesDay.add(new PieEntry(emotionId));
+                            barEntriesDay.add(new PieEntry(percent, id));
                         }
+                        legendEntries= new ArrayList<>();
+                        ArrayList<String> labels = new ArrayList<>();
+                        labels.add("1");
+                        labels.add("2");
+                        labels.add("3");
+                        labels.add("4");
+                        labels.add("5");
 
                         PieDataSet barDataSetDay = new PieDataSet(barEntriesDay, "Today");
                         barDataSetDay.setColors(colorsList);
                         barDataSetDay.setSliceSpace(1f);
                         barDataSetDay.setDrawValues(false);
-                        binding.barChart.getLegend().setEnabled(false);
                         barDataSetDay.setDrawIcons(false);
+                        barDataSetDay.setSliceSpace(3f); // Пространство между сегментами
+
+// Установка меток внутри PieDataSet
+                        barDataSetDay.setSliceSpace(3f);
+                        barDataSetDay.setValueTextSize(12f);
+                        barDataSetDay.setIconsOffset(new MPPointF(0, 40));
+                        barDataSetDay.setValueTextColor(Color.BLACK);
+
+// Установка меток в легенде
+                        Legend legend = binding.barChart.getLegend();
+                        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
+                        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
+                        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT); // Расположение справа
+                        legend.setDrawInside(false);
+                        legend.setXEntrySpace(7f);
+                        legend.setYEntrySpace(0f);
+                        legend.setYOffset(0f);
+                        legend.setTextSize(12f);
+                        legend.setWordWrapEnabled(true);
+
+// Установка меток для цветов и айди
+                        for (int i = 0; i < labels.size(); i++) {
+                            LegendEntry entry = new LegendEntry();
+                            entry.formColor = colorsList.get(i);
+                            entry.label = labels.get(i);
+                            legendEntries.add(entry);
+                        }
+                        legend.setCustom(legendEntries);
 
                         PieData barDataDay = new PieData(barDataSetDay);
                         binding.barChart.setData(barDataDay);
                         binding.barChart.invalidate();
-
-
 
 
 
@@ -183,12 +271,9 @@ public class StataFragment extends Fragment {
                         barDataSetWeek.setDrawValues(false);
                         binding.barChartWeek.setData(barDataWeek);
                         binding.barChartWeek.invalidate();
-
-
                         for(int i=0; i<diaryEntryListMounth.size();i++){
                             barEntriesMounth.add(new Entry(i, diaryEntryListMounth.get(i).getEmotion().getId()));
                         }
-
                         binding.barChartMounth.getAxisLeft().setDrawLabels(false);
                         binding.barChartMounth.getAxisRight().setMaxWidth(5f);
                         binding.barChartMounth.getAxisRight().setGranularity(1f);
@@ -213,6 +298,41 @@ public class StataFragment extends Fragment {
 
         return view;
     }
+
+    public void setDay(DiaryEntry diaryEntry){
+        int id = diaryEntry.getEmotion().getId();
+        pieDay= new int[5];
+        switch (id){
+            case 1:
+                one++;
+                all++;
+                pieDay[0]=one;
+                break;
+            case 2:
+                two++;
+                all++;
+                pieDay[1] = two;
+                break;
+            case 3:
+                three++;
+                all++;
+                pieDay[2]=three;
+                break;
+            case 4:
+                four++;
+                all++;
+                pieDay[3]=four;
+                break;
+            case 5:
+                five++;
+                all++;
+                pieDay[4]=five;
+                break;
+        }
+    }
+
+
+
     private int getColorForEmotionId(int emotionId) {
         switch (emotionId) {
             case 1:
