@@ -53,4 +53,6 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation ("androidx.core:core-ktx:1.12.0")
+    implementation ("com.google.android.gms:play-services-wearable:18.1.0")
 }
