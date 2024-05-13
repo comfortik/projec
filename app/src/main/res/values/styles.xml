@@ -1,27 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="btn">
         <item name="backgroundTint">#48585F</item>
         <item name="cornerRadius">25dp</item>
         <item name="android:textColor">#FFFFFF</item>
         <item name="fontFamily">sans-serif-light</item>
     </style>
+
     <style name="fragment">
         <item name="backgroundTint">#AFAFAF</item>
     </style>
-    <style name="SeekBarColor"
-        parent="Widget.AppCompat.SeekBar">
+
+    <style name="SeekBarColor" parent="Widget.AppCompat.SeekBar">
         <item name="colorAccent">#455A64</item>
     </style>
+
     <style name="SpinnerStyle" parent="Widget.AppCompat.ListView.DropDown">
         <item name="android:divider">#CFD8DC</item>
         <item name="android:dividerHeight">5dp</item>
         <item name="marginHorizontal">12dp</item>
         <item name="android:clipToPadding">false</item>
     </style>
+
     <style name="AlertDialogText" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:colorAccent">#0000FF</item>
         <item name="fontFamily">monospace</item>
+    </style>
+
+    <style name="Widget.Project.AppWidget.Container" parent="android:Widget">
+        <item name="android:id">@android:id/background</item>
+        <item name="android:background">?android:attr/colorBackground</item>
+    </style>
+
+    <style name="Widget.Project.AppWidget.InnerView" parent="android:Widget">
+        <item name="android:background">?android:attr/colorBackground</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
 
 </resources>

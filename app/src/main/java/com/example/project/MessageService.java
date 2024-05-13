@@ -18,12 +18,14 @@ public class MessageService extends WearableListenerService {
     @Override
     public void onMessageReceived(@NonNull MessageEvent messageEvent) {
         super.onMessageReceived(messageEvent);
-        String message = Arrays.toString(messageEvent.getData());
+        String message = new String(messageEvent.getData());
         addMessageToFirestore(message);
     }
+
     public void addMessageToFirestore(String message){
         fb = FirebaseFirestore.getInstance();
         int emotionId = Integer.parseInt(message);
+
         DiaryEntry diaryEntry= new DiaryEntry(new Emotion(emotionId));
         FirebaseAuth mAuth =FirebaseAuth.getInstance();
         FirestoreGetId firestoreGetId= new FirestoreGetId(fb);

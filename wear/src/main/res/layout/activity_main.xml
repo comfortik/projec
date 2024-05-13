@@ -12,38 +12,38 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingVertical="12dp">
+            android:paddingVertical="16dp">
             <ImageButton
                 android:id="@+id/btn1"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:background="@mipmap/ic_launcher"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:background="@drawable/emotion_one"
                 android:layout_gravity="center"/>
             <ImageButton
                 android:id="@+id/btn2"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:background="@mipmap/ic_launcher"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:background="@drawable/emotion_two"
                 android:layout_gravity="center"/>
 
             <ImageButton
                 android:id="@+id/btn3"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
                 android:layout_gravity="center"
-                android:background="@mipmap/ic_launcher" />
+                android:background="@drawable/emotion_three" />
 
             <ImageButton
                 android:id="@+id/btn4"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:background="@mipmap/ic_launcher"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:background="@drawable/emotion_four"
                 android:layout_gravity="center"/>
             <ImageButton
                 android:id="@+id/btn5"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:background="@mipmap/ic_launcher"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:background="@drawable/emotion_five"
                 android:layout_gravity="center"/>
         </LinearLayout>
     </ScrollView>

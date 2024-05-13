@@ -85,19 +85,19 @@ public class ProfileHolder extends RecyclerView.ViewHolder {
     private void setImage(int id){
         switch(id){
             case 1:
-                binding.imageView.setBackgroundResource(R.drawable.ic_launcher_background);
+                binding.imageView.setBackgroundResource(R.drawable.emotion_one);
                 break;
             case 2:
-                binding.imageView.setBackgroundResource(R.drawable.ic_launcher_background);
+                binding.imageView.setBackgroundResource(R.drawable.emotion_two);
                 break;
             case 3:
-                binding.imageView.setBackgroundResource(R.drawable.ic_launcher_background);
+                binding.imageView.setBackgroundResource(R.drawable.emotion_three);
                 break;
             case 4:
-                binding.imageView.setBackgroundResource(R.drawable.ic_launcher_background);
+                binding.imageView.setBackgroundResource(R.drawable.emotion_four);
                 break;
             case 5:
-                binding.imageView.setBackgroundResource(R.drawable.ic_launcher_background);
+                binding.imageView.setBackgroundResource(R.drawable.emotion_five);
 
 
         }

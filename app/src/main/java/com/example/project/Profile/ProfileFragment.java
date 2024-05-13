@@ -79,7 +79,7 @@ public class ProfileFragment extends Fragment {
                             if(documentSnapshot!=null){
                                 binding.textView.setVisibility(View.GONE);
                                 diaryEntryList = queryDocumentSnapshots.toObjects(DiaryEntry.class);
-                                Collections.sort(diaryEntryList, Comparator.comparing(DiaryEntry::getDate));
+                                Collections.sort(diaryEntryList, Comparator.comparing(DiaryEntry::getDate).reversed());
                             }
                         }
                         adapter = new ProfileAdapter();

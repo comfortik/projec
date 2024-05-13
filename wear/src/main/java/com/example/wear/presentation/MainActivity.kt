@@ -42,7 +42,7 @@ class MainActivity : WearableActivity() {
             val node = nodes.firstOrNull()
             node?.let {
                 messageClient.sendMessage(it.id, "/message_p", message.toByteArray()).addOnSuccessListener {
-                    Toast.makeText(this, "Сообщение отправлено", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Сообщение отправлено"+ message, Toast.LENGTH_SHORT).show()
                 }.addOnFailureListener {
                     Toast.makeText(this, "Ошибка отправки сообщения", Toast.LENGTH_SHORT).show()
                 }
