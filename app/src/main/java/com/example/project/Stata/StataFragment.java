@@ -173,13 +173,6 @@ public class StataFragment extends Fragment {
 
                         List<Integer> colorsList = new ArrayList<>();
 
-//                        for (int i = 0; i < diaryEntryListDay.size(); i++) {
-//                            int emotionId = diaryEntryListDay.get(i).getEmotion().getId();
-//                            int color = getColorForEmotionId(emotionId);
-//                            colorsList.add(color);
-//
-//                            barEntriesDay.add(new PieEntry(emotionId));
-//                        }
                         for (int i = 0; i < pieDay.length; i++) {
                             int id = i + 1;
                             int count = 0;
@@ -332,7 +325,7 @@ public class StataFragment extends Fragment {
 
 
 
-    private int getColorForEmotionId(int emotionId) {
+    public static int getColorForEmotionId(int emotionId) {
         switch (emotionId) {
             case 1:
                 return Color.parseColor("#455A64");
