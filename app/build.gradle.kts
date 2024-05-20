@@ -54,9 +54,10 @@ dependencies {
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
     testImplementation(libs.junit)
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    implementation ("androidx.core:core-ktx:1.12.0")
-    implementation ("com.google.android.gms:play-services-wearable:18.1.0")
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("com.google.android.gms:play-services-wearable:18.1.0")
 }

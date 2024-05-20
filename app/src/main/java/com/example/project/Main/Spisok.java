@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Spisok {
 
-    List<Type> types;
+    public List<Type> types;
 
 
      FirestoreGetId  firestoreGetId;
@@ -93,7 +93,6 @@ public class Spisok {
     }
     public static void addType(List<Type> types, Type newType) {
         types.add(newType);
-        // Обновление списка после добавления нового элемента
     }
 
 }

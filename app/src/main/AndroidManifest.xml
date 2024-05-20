@@ -29,13 +29,7 @@
                 android:resource="@xml/new_app_widget_info" />
         </receiver>
 
-        <activity
-            android:name=".NewAppWidgetConfigureActivity"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
-            </intent-filter>
-        </activity>
+
         <activity
             android:name=".Main.MainActivity"
             android:exported="true"

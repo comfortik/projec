@@ -15,11 +15,7 @@ public class NewAppWidget extends AppWidgetProvider {
                                        int appWidgetId, Bitmap piechart) {
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.new_app_widget);
-
-        // Обновление ImageView в виджете с помощью Bitmap
         views.setImageViewBitmap(R.id.imageView, piechart);
-
-        // Инструкция менеджеру виджетов обновить виджет
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 

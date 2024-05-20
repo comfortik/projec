@@ -8,6 +8,7 @@
     android:orientation="vertical"
     android:gravity="bottom"
     tools:context=".Main.MainActivity">
+
     <LinearLayout
         android:id="@+id/mainlayout"
         android:layout_width="match_parent"
@@ -25,20 +26,23 @@
         <FrameLayout
             android:id="@+id/fragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="600dp"
             android:layout_gravity="center"
             android:visibility="gone"/>
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Режим"
+            app:boxStrokeColor="@color/black"
             android:fontFamily="monospace"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
             <AutoCompleteTextView
                 android:id="@+id/fillied_exposed"
                 android:layout_width="match_parent"
                 app:boxStrokeWidth="0dp"
+                android:textColor="@color/black"
                 app:boxStrokeWidthFocused="0dp"
                 android:fontFamily="monospace"
                 android:layout_marginHorizontal="12dp"
@@ -115,6 +119,8 @@
         app:itemIconSize="30dp"
         android:background="#90A4AE"
         app:labelVisibilityMode="unlabeled"/>
+
+
 
 
 </LinearLayout>

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -68,10 +69,14 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
         View customLoadingView = getLayoutInflater().inflate(R.layout.splash_screen, null);
+
+
+
         setContentView(customLoadingView);
         fb = FirebaseFirestore.getInstance();
         startService(new Intent(this, MessageService.class));
         mAuth = FirebaseAuth.getInstance();
+        spisok = new Spisok(this , fb, mAuth.getCurrentUser());
         add= new AddUserToFirebase(this, fb, mAuth);
         add.anonimouseSignUp();
         firestoreGetId = new FirestoreGetId(fb);
@@ -123,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 else{Timer(milliesec);}
             }
             else{
-                Toast.makeText(context, "бля", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Повтори", Toast.LENGTH_SHORT).show();
             }
 
 
@@ -209,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             @Override
             public void onFinish() {
                 if(currentType==null){
-                    Toast.makeText(context, "null type", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Null type", Toast.LENGTH_SHORT).show();
                 }
                 else if(currentType.isInterval() && porabotal){
                     try{
@@ -256,11 +261,23 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         getTypes();
     }
     public void getTypes(){
-        spisok = new Spisok(this , fb, mAuth.getCurrentUser());
+
         spisok.createSpisok(adapter -> {
             if (adapter != null) {
+                if(getIntent().getLongExtra("save",0)!=0){
+                    savemilliesec= getIntent().getLongExtra("save", 0);
+                    if(savemilliesec>0){
+                        Timer(savemilliesec);
+                        binding.btnTimer.setVisibility(View.GONE);
+                        binding.ll.setVisibility(View.VISIBLE);
+                        loadTypeFromFirestore(getIntent().getStringExtra("name"));
+                        porabotal = getIntent().getBooleanExtra("boo", false);
+                    }
+
+                }
                 setContentView(binding.getRoot());
                 binding.filliedExposed.setAdapter(adapter);
+
             }
         });
     }
@@ -273,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                         .collection("Types")
                         .add(new Type(name, timeWork,timeRest))
                         .addOnCompleteListener(task -> {
-                            if(task.isSuccessful()) Toast.makeText(MainActivity.this, "assss", Toast.LENGTH_SHORT).show();
+                            if(task.isSuccessful()) Toast.makeText(MainActivity.this, "Добавлен новый тип", Toast.LENGTH_SHORT).show();
 
                         });
             }
@@ -285,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 .collection("Types")
                 .add(new Type(name, timeWork))
                 .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) Toast.makeText(MainActivity.this, "assss", Toast.LENGTH_SHORT).show();
+                    if(task.isSuccessful()) Toast.makeText(MainActivity.this, "Добавлен новый тип", Toast.LENGTH_SHORT).show();
                 }));
 
     }
@@ -414,7 +431,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     protected void onPause() {
         super.onPause();
         if(countDownTimer!=null) {
-            NotificationHelper.sendNotification(this);
+            NotificationHelper.sendNotification(this, savemilliesec, currentType.isInterval(), currentType.getName());
             countDownTimer.cancel();
             countRestartTimer++;
         }
@@ -426,10 +443,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         super.onResume();
         NotificationManager notificationManager= (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
-        if(savemilliesec>0){
-            countDownTimer.cancel();
-            Timer(savemilliesec);
-        }
 
     }
 }
@@ -437,17 +450,19 @@ class NotificationHelper {
 
     private static final String CHANNEL_ID = "1";
     private static final String CHANNEL_NAME = "My Channel";
-    public static void sendNotification(Context context) {
+    public static void sendNotification(Context context, long savemilliesec, boolean porabotal, String typeName) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setContentText("DAAAAAAAAA")
-                .setContentTitle("poluchilos")
+                .setContentText("Фокусировка не закончена")
+                .setContentTitle("Вернись")
                 .setSmallIcon(R.drawable.img)
                 .setAutoCancel(true)
                 .setPriority(NotificationManager.IMPORTANCE_HIGH);
-//        Intent intent = new Intent(context, MainActivity.class);
-//        intent.putExtra("save", savemilliesec);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_MUTABLE);
-//        builder.setContentIntent(pendingIntent);
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("save",savemilliesec);
+        intent.putExtra("boo", porabotal);
+        intent.putExtra("name", typeName);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pendingIntent);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.O){
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);

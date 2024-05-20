@@ -43,7 +43,6 @@ public class AddUserToFirebase {
         mAuth.signInAnonymously()
                 .addOnCompleteListener((Activity) context, task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(context, "Authentication success.", Toast.LENGTH_SHORT).show();
                         userExist();
                     } else {
                         Toast.makeText(context, "Authentication failed.", Toast.LENGTH_SHORT).show();
@@ -60,10 +59,10 @@ public class AddUserToFirebase {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                                Toast.makeText(context, "Файлик имеется", Toast.LENGTH_SHORT).show();
+
                                 onAddUserToFirestore.addUser();
                             } else {
-                                Toast.makeText(context, "Нет файлика, создаем новый!", Toast.LENGTH_SHORT).show();
+
                                 addUser();
 
                             }
@@ -84,8 +83,7 @@ public class AddUserToFirebase {
                 .add(userData)
                 .addOnSuccessListener(documentReference -> {
                     id = documentReference.getId();
-                    Toast.makeText(context, "DocumentSnapshot added with ID: " + documentReference.getId(),
-                            Toast.LENGTH_SHORT).show();
+
                     onAddUserToFirestore.addUser();
                 })
                 .addOnFailureListener(e -> {

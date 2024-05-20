@@ -99,7 +99,7 @@ public class EmotionUtils {
             Emotion emotion= new Emotion(4);
             emotionBtns(context, emotion);
         });
-        binding.imgAhuenno.setOnClickListener(v -> {
+        binding.imgSuper.setOnClickListener(v -> {
             Emotion emotion= new Emotion(5);
             emotionBtns(context, emotion);
         });
@@ -229,7 +229,7 @@ public class EmotionUtils {
     public static void createBarChartBitmap(Context context) {
         PieChart pieChart = new PieChart(context);
         List<PieEntry> barEntriesDay = new ArrayList<>();
-
+        mAuth = FirebaseAuth.getInstance();
         FirestoreGetId firestoreGetId = new FirestoreGetId(fb);
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());

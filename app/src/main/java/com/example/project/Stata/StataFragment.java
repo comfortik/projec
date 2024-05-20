@@ -128,37 +128,38 @@ public class StataFragment extends Fragment {
                                     int day= c.get(Calendar.DAY_OF_WEEK);
                                     barWeek = new int[7];
                                     switch (day){
-                                        case 1:
+                                        case 2:
                                             mon++;
                                             monId+=diaryEntry.getEmotion().getId();
                                             barWeek[0]=monId/mon;
                                             break;
-                                        case 2:
+                                        case 3:
                                             tue++;
                                             tueId+=diaryEntry.getEmotion().getId();
 
                                             barWeek[1]=tueId/tue;
                                             break;
-                                        case 3:
+                                        case 4:
                                             wed++;
                                             wedId+=diaryEntry.getEmotion().getId();
                                             barWeek[2]=wedId/wed;
-                                        case 4:
+                                            break;
+                                        case 5:
                                             th++;
                                             thId+=diaryEntry.getEmotion().getId();
                                             barWeek[3]=thId/th;
                                             break;
-                                        case 5:
+                                        case 6:
                                             fri++;
                                             friId+=diaryEntry.getEmotion().getId();
                                             barWeek[4]=friId/fri;
                                             break;
-                                        case 6:
+                                        case 7:
                                             sut++;
                                             sutId+=diaryEntry.getEmotion().getId();
                                             barWeek[5]= sutId/sut;
                                             break;
-                                        case 7:
+                                        case 1:
                                             sun++;
                                             sunId+=diaryEntry.getEmotion().getId();
                                             barWeek[6]=sunId/ sun;
@@ -172,114 +173,116 @@ public class StataFragment extends Fragment {
                         Collections.sort(diaryEntryList, Comparator.comparing(DiaryEntry::getDate));
 
                         List<Integer> colorsList = new ArrayList<>();
-
-                        for (int i = 0; i < pieDay.length; i++) {
-                            int id = i + 1;
-                            int count = 0;
-                            switch (id) {
-                                case 1:
-                                    count = one;
-                                    break;
-                                case 2:
-                                    count = two;
-                                    break;
-                                case 3:
-                                    count = three;
-                                    break;
-                                case 4:
-                                    count = four;
-                                    break;
-                                case 5:
-                                    count = five;
-                                    break;
+                        if (pieDay!=null){
+                            for (int i = 0; i < pieDay.length; i++) {
+                                int id = i + 1;
+                                int count = 0;
+                                switch (id) {
+                                    case 1:
+                                        count = one;
+                                        break;
+                                    case 2:
+                                        count = two;
+                                        break;
+                                    case 3:
+                                        count = three;
+                                        break;
+                                    case 4:
+                                        count = four;
+                                        break;
+                                    case 5:
+                                        count = five;
+                                        break;
+                                }
+                                float percent = (float) count / all * 100;
+                                int color = getColorForEmotionId(id);
+                                colorsList.add(color);
+                                barEntriesDay.add(new PieEntry(percent, id));
                             }
-                            float percent = (float) count / all * 100;
-                            int color = getColorForEmotionId(id);
-                            colorsList.add(color);
-                            barEntriesDay.add(new PieEntry(percent, id));
-                        }
-                        legendEntries= new ArrayList<>();
-                        ArrayList<String> labels = new ArrayList<>();
-                        labels.add("1");
-                        labels.add("2");
-                        labels.add("3");
-                        labels.add("4");
-                        labels.add("5");
+                            legendEntries= new ArrayList<>();
+                            ArrayList<String> labels = new ArrayList<>();
+                            labels.add("1");
+                            labels.add("2");
+                            labels.add("3");
+                            labels.add("4");
+                            labels.add("5");
 
-                        PieDataSet barDataSetDay = new PieDataSet(barEntriesDay, "Today");
-                        barDataSetDay.setColors(colorsList);
-                        barDataSetDay.setSliceSpace(1f);
-                        barDataSetDay.setDrawValues(false);
-                        barDataSetDay.setDrawIcons(false);
-                        barDataSetDay.setSliceSpace(3f); // Пространство между сегментами
-
-// Установка меток внутри PieDataSet
-                        barDataSetDay.setSliceSpace(3f);
-                        barDataSetDay.setValueTextSize(12f);
-                        barDataSetDay.setIconsOffset(new MPPointF(0, 40));
-                        barDataSetDay.setValueTextColor(Color.BLACK);
+                            PieDataSet barDataSetDay = new PieDataSet(barEntriesDay, "Today");
+                            barDataSetDay.setColors(colorsList);
+                            barDataSetDay.setSliceSpace(1f);
+                            barDataSetDay.setDrawValues(false);
+                            barDataSetDay.setDrawIcons(false);
+                            barDataSetDay.setSliceSpace(3f);
+                            barDataSetDay.setSliceSpace(3f);
+                            barDataSetDay.setValueTextSize(12f);
+                            barDataSetDay.setIconsOffset(new MPPointF(0, 40));
+                            barDataSetDay.setValueTextColor(Color.BLACK);
 
 // Установка меток в легенде
-                        Legend legend = binding.barChart.getLegend();
-                        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
-                        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
-                        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT); // Расположение справа
-                        legend.setDrawInside(false);
-                        legend.setXEntrySpace(7f);
-                        legend.setYEntrySpace(0f);
-                        legend.setYOffset(0f);
-                        legend.setTextSize(12f);
-                        legend.setWordWrapEnabled(true);
+                            Legend legend = binding.barChart.getLegend();
+                            legend.setOrientation(Legend.LegendOrientation.VERTICAL);
+                            legend.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
+                            legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT); // Расположение справа
+                            legend.setDrawInside(false);
+                            legend.setXEntrySpace(7f);
+                            legend.setYEntrySpace(0f);
+                            legend.setYOffset(0f);
+                            legend.setTextSize(12f);
+                            legend.setWordWrapEnabled(true);
 
 // Установка меток для цветов и айди
-                        for (int i = 0; i < labels.size(); i++) {
-                            LegendEntry entry = new LegendEntry();
-                            entry.formColor = colorsList.get(i);
-                            entry.label = labels.get(i);
-                            legendEntries.add(entry);
+                            for (int i = 0; i < labels.size(); i++) {
+                                LegendEntry entry = new LegendEntry();
+                                entry.formColor = colorsList.get(i);
+                                entry.label = labels.get(i);
+                                legendEntries.add(entry);
+                            }
+                            legend.setCustom(legendEntries);
+
+                            PieData barDataDay = new PieData(barDataSetDay);
+                            binding.barChart.setData(barDataDay);
+                            binding.barChart.invalidate();
+
+
                         }
-                        legend.setCustom(legendEntries);
-
-                        PieData barDataDay = new PieData(barDataSetDay);
-                        binding.barChart.setData(barDataDay);
-                        binding.barChart.invalidate();
 
 
 
 
-
-                        for(int i=0; i<barWeek.length;i++){
-                            barEntriesWeek.add(new BarEntry(i+1,barWeek[i]));
+                        if(barWeek!=null){
+                            for(int i=0; i<barWeek.length;i++){
+                                barEntriesWeek.add(new BarEntry(i+1,barWeek[i]));
+                            }
+                            binding.barChartWeek.getAxisLeft().setDrawLabels(false);
+                            binding.barChartWeek.getAxisRight().setMaxWidth(5f);
+                            binding.barChartWeek.getAxisRight().setGranularity(1f);
+                            binding.barChartWeek.getAxisRight().setMinWidth(0f);
+                            binding.barChartWeek.getAxisRight().setValueFormatter(new MyValueFormatter());
+                            binding.barChartWeek.setDrawValueAboveBar(false);
+                            BarDataSet barDataSetWeek = new BarDataSet(barEntriesWeek, "Week");
+                            BarData barDataWeek = new BarData(barDataSetWeek);
+                            barDataSetWeek.setColor(Color.parseColor("#455A64"));
+                            barDataSetWeek.setDrawValues(false);
+                            binding.barChartWeek.setData(barDataWeek);
+                            binding.barChartWeek.invalidate();
                         }
-                        binding.barChartWeek.getAxisLeft().setDrawLabels(false);
-                        binding.barChartWeek.getAxisRight().setMaxWidth(5f);
-                        binding.barChartWeek.getAxisRight().setGranularity(1f);
-                        binding.barChartWeek.getAxisRight().setMinWidth(0f);
-                        binding.barChartWeek.getAxisRight().setValueFormatter(new MyValueFormatter());
-                        binding.barChartWeek.setDrawValueAboveBar(false);
-                        BarDataSet barDataSetWeek = new BarDataSet(barEntriesWeek, "Week");
-                        BarData barDataWeek = new BarData(barDataSetWeek);
-                        barDataSetWeek.setColor(Color.parseColor("#455A64"));
-                        barDataSetWeek.setDrawValues(false);
-                        binding.barChartWeek.setData(barDataWeek);
-                        binding.barChartWeek.invalidate();
-                        for(int i=0; i<diaryEntryListMounth.size();i++){
-                            barEntriesMounth.add(new Entry(i, diaryEntryListMounth.get(i).getEmotion().getId()));
+                        if(diaryEntryListMounth!=null){
+                            for(int i=0; i<diaryEntryListMounth.size();i++){
+                                barEntriesMounth.add(new Entry(i, diaryEntryListMounth.get(i).getEmotion().getId()));
+                            }
+                            binding.barChartMounth.getAxisLeft().setDrawLabels(false);
+                            binding.barChartMounth.getAxisRight().setMaxWidth(5f);
+                            binding.barChartMounth.getAxisRight().setGranularity(1f);
+                            binding.barChartMounth.getAxisRight().setMinWidth(0f);
+                            binding.barChartMounth.getAxisRight().setValueFormatter(new MyValueFormatter());
+
+                            LineDataSet barDataSetMounth = new LineDataSet(barEntriesMounth, "Mounth");
+                            LineData barDataMounth = new LineData(barDataSetMounth);
+                            barDataSetMounth.setColor(Color.parseColor("#455A64"));
+                            barDataSetMounth.setDrawValues(false);
+                            binding.barChartMounth.setData(barDataMounth);
+                            binding.barChartMounth.invalidate();
                         }
-                        binding.barChartMounth.getAxisLeft().setDrawLabels(false);
-                        binding.barChartMounth.getAxisRight().setMaxWidth(5f);
-                        binding.barChartMounth.getAxisRight().setGranularity(1f);
-                        binding.barChartMounth.getAxisRight().setMinWidth(0f);
-                        binding.barChartMounth.getAxisRight().setValueFormatter(new MyValueFormatter());
-
-                        LineDataSet barDataSetMounth = new LineDataSet(barEntriesMounth, "Mounth");
-                        LineData barDataMounth = new LineData(barDataSetMounth);
-                        barDataSetMounth.setColor(Color.parseColor("#455A64"));
-                        barDataSetMounth.setDrawValues(false);
-                        binding.barChartMounth.setData(barDataMounth);
-                        binding.barChartMounth.invalidate();
-
-
                     });
         });
 
@@ -332,11 +335,11 @@ public class StataFragment extends Fragment {
             case 2:
                 return Color.parseColor("#607D8B");
             case 3:
-                return Color.parseColor("#90A4AF");
+                return Color.parseColor("#90A4AA");
             case 4:
                 return Color.parseColor("#B0BEC5");
             case 5:
-                return Color.parseColor("#90A4AC");
+                return Color.parseColor("#D0E0E8");
             default:
                 return Color.BLACK;
         }
