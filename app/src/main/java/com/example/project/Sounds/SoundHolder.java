@@ -2,6 +2,7 @@ package com.example.project.Sounds;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.GradientDrawable;
 import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
@@ -28,12 +29,13 @@ public class SoundHolder  extends RecyclerView.ViewHolder {
         binding.imgButton.setOnClickListener(v -> {
             if (sound.getMediaPlayer().isPlaying()) {
                 sound.getMediaPlayer().pause();
-                binding.imgButton.setBackgroundResource(R.drawable.ic_launcher_background);
+                binding.imgButton.setBackgroundResource(sound.getImg());
                 binding.seekBar.setProgress(0);
             } else {
                 sound.getMediaPlayer().start();
                 sound.getMediaPlayer().setLooping(true);
-                binding.imgButton.setBackgroundResource(R.drawable.ic_launcher_foreground);
+                binding.imgButton.setBackgroundResource(sound.getImgPause());
+
             }
         });
         binding.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -65,7 +67,9 @@ public class SoundHolder  extends RecyclerView.ViewHolder {
         binding.imgButton.setBackgroundResource(R.drawable.ic_launcher_background);
         binding.seekBar.setProgress(0);
     }
-
+    private float convertDpToPixel(float dp, Context context) {
+        return dp * context.getResources().getDisplayMetrics().density;
+    }
 
 
 }

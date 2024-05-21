@@ -49,10 +49,10 @@ public class SoundFragment extends Fragment {
         binding= FragmentSoundBinding.inflate(inflater, null, false);
         View view = binding.getRoot();
         soundList = new ArrayList<>();
-        soundList.add(new Sound(MediaPlayer.create(getContext(), R.raw.sound1), "Сверчки", R.drawable.ic_launcher_background ));
-        soundList.add(new Sound(MediaPlayer.create(getContext(), R.raw.sound2), "Звуки волн", R.drawable.ic_launcher_background));
-        soundList.add(new Sound(MediaPlayer.create(getContext(), R.raw.sound3), "Sound 3", R.drawable.ic_launcher_background));
-        soundList.add(new Sound(MediaPlayer.create(getContext(), R.raw.sound4), "Sound 4", R.drawable.ic_launcher_background));
+        soundList.add(new Sound(MediaPlayer.create(getContext(), R.raw.waves), "Волны", R.drawable.sound_wave, R.drawable.sound_wave_pause));
+        soundList.add(new Sound(MediaPlayer.create(getContext(), R.raw.drops), "Капли", R.drawable.sound_drops, R.drawable.sound_drops_pause));
+        soundList.add(new Sound(MediaPlayer.create(getContext(), R.raw.storm), "Шторм", R.drawable.sound_storm, R.drawable.sound_storm_pause));
+        soundList.add(new Sound(MediaPlayer.create(getContext(), R.raw.candle), "Горящие свечи", R.drawable.sound_fire, R.drawable.sound_fire_pause));
         soundAdapter = new SoundAdapter(soundList, getContext());
         binding.recycler.setAdapter(soundAdapter);
         binding.btn.setOnClickListener(v -> {
@@ -78,9 +78,12 @@ public class SoundFragment extends Fragment {
         // TODO: Use the ViewModel
     }
     public void releaseMedia(){
-        for (int i=0; i<soundList.size(); i++){
-            soundList.get(i).getMediaPlayer().release();
+        if(soundList!=null){
+            for (int i=0; i<soundList.size(); i++){
+                soundList.get(i).getMediaPlayer().release();
+            }
         }
+
     }
 
 

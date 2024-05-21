@@ -6,10 +6,14 @@ public class Sound {
     MediaPlayer mediaPlayer;
     String name;
     int img;
-    public Sound(MediaPlayer mediaPlayer, String name, int img){
+
+
+    int imgPause;
+    public Sound(MediaPlayer mediaPlayer, String name, int img, int imgPause){
         this.mediaPlayer=mediaPlayer;
         this.name= name;
         this.img= img;
+        this.imgPause = imgPause;
     }
     public Sound(){}
 
@@ -35,6 +39,13 @@ public class Sound {
 
     public void setImg(int img) {
         this.img = img;
+    }
+    public int getImgPause() {
+        return imgPause;
+    }
+
+    public void setImgPause(int imgPause) {
+        this.imgPause = imgPause;
     }
 
 

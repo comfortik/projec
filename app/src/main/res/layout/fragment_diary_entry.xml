@@ -10,10 +10,10 @@
     android:background="@drawable/alert_profile">
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_margin="16dp"
-        android:background="@mipmap/ic_launcher_round"/>
+        android:background="@drawable/emotion_two"/>
     <TextView
         android:id="@+id/tvFocus"
         android:layout_width="match_parent"

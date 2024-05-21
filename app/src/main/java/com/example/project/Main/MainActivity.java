@@ -70,16 +70,20 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         binding = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
         View customLoadingView = getLayoutInflater().inflate(R.layout.splash_screen, null);
 
-
-
         setContentView(customLoadingView);
         fb = FirebaseFirestore.getInstance();
-        startService(new Intent(this, MessageService.class));
         mAuth = FirebaseAuth.getInstance();
+        startService(new Intent(this, MessageService.class));
         spisok = new Spisok(this , fb, mAuth.getCurrentUser());
         add= new AddUserToFirebase(this, fb, mAuth);
         add.anonimouseSignUp();
         firestoreGetId = new FirestoreGetId(fb);
+//        firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
+//            fb.collection("Users")
+//                    .document(userId)
+//                    .collection("Types")
+//                    .add(new Type("test", 5000, 5000));
+//        });
         add.setOnAddUserToFirestore(this::getTypes);
         binding.filliedExposed.setDropDownBackgroundResource(R.drawable.png);
         final int NOTIFICATION_PERMISSION_CODE = 123;
@@ -180,7 +184,10 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                         long hour = totalSeconds / 3600;
                         long min = (totalSeconds % 3600) / 60;
                         long sec = totalSeconds % 60;
-                        binding.tvTimer.setText(f.format(hour) + ":" + f.format(min) + ":" + f.format(sec));
+                        if(getIntent().getLongExtra("save",0)==0){
+                            binding.tvTimer.setText(f.format(hour) + ":" + f.format(min) + ":" + f.format(sec));
+                        }
+
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -239,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                 } else{
                     binding.tvTimer.setText("00:00:00");
                     soundNotification();
-                    binding.filliedExposed.setText(null);
+                    binding.filliedExposed.setText(" ");
                     finishTimer();
                 }
             }
@@ -261,7 +268,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         getTypes();
     }
     public void getTypes(){
-
         spisok.createSpisok(adapter -> {
             if (adapter != null) {
                 if(getIntent().getLongExtra("save",0)!=0){
@@ -271,6 +277,10 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                         binding.btnTimer.setVisibility(View.GONE);
                         binding.ll.setVisibility(View.VISIBLE);
                         loadTypeFromFirestore(getIntent().getStringExtra("name"));
+                        if(getIntent().getBooleanExtra("interval", false)){
+                            countWork =getIntent().getIntExtra("work", 0);
+                            countRest = getIntent().getIntExtra("rest",0);
+                        }
                         porabotal = getIntent().getBooleanExtra("boo", false);
                     }
 
@@ -375,8 +385,8 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         else {
             long workTime=0;
             long restTime=0;
-            if (countWork>0)++workTime;
-            if(countRest>0) ++restTime;
+//            if (countWork>0)++workTime;
+//            if(countRest>0) ++restTime;
             if(porabotal){
                 workTime += countWork*currentType.getTimeWork()/1000+(currentType.getTimeWork()-savemilliesec)/1000;
                 restTime += countRest*currentType.getTimeRest()/1000;
@@ -431,7 +441,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     protected void onPause() {
         super.onPause();
         if(countDownTimer!=null) {
-            NotificationHelper.sendNotification(this, savemilliesec, currentType.isInterval(), currentType.getName());
+            NotificationHelper.sendNotification(this, savemilliesec, porabotal, currentType.getName(), countWork, countRest, currentType.isInterval());
             countDownTimer.cancel();
             countRestartTimer++;
         }
@@ -443,14 +453,13 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         super.onResume();
         NotificationManager notificationManager= (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
-
     }
 }
 class NotificationHelper {
 
     private static final String CHANNEL_ID = "1";
     private static final String CHANNEL_NAME = "My Channel";
-    public static void sendNotification(Context context, long savemilliesec, boolean porabotal, String typeName) {
+    public static void sendNotification(Context context, long savemilliesec, boolean porabotal, String typeName, int timeWork, int timeRest, boolean isinterval) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setContentText("Фокусировка не закончена")
                 .setContentTitle("Вернись")
@@ -461,6 +470,11 @@ class NotificationHelper {
         intent.putExtra("save",savemilliesec);
         intent.putExtra("boo", porabotal);
         intent.putExtra("name", typeName);
+        intent.putExtra("work", timeWork);
+        intent.putExtra("rest", timeRest);
+        intent.putExtra("interval", isinterval);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                |Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingIntent);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -468,8 +482,10 @@ class NotificationHelper {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(channel);
         }
+        for(int i=0; i<10; i++){
+            notificationManager.notify(i, builder.build());
+        }
 
-        notificationManager.notify(1, builder.build());
 
     }
 }

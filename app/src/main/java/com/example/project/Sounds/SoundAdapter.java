@@ -53,9 +53,9 @@ public class SoundAdapter extends RecyclerView.Adapter<SoundHolder> {
     }
 
     public void resetSeekBars(){
-        for(int i = 0; i < soundHolders.size(); i++){ // перебираем все SoundHolder в списке
+        for(int i = 0; i < soundHolders.size(); i++){
             SoundHolder soundHolder = soundHolders.get(i);
-            soundHolder.resetSeek(); // сбрасываем SeekBar для каждого SoundHolder
+            soundHolder.resetSeek();
         }
     }
 }

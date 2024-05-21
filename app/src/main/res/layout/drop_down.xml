@@ -6,14 +6,15 @@
     android:layout_marginHorizontal="12dp"
     android:layout_marginTop="12dp"
     android:background="@drawable/drop_down">
-    <ImageButton
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imgButton"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:paddingStart="12dp"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/drop_down"
+        app:shapeAppearanceOverlay="@style/media" />
     <TextView
         android:id="@+id/tv"
         android:layout_width="0dp"

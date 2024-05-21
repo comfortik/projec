@@ -227,9 +227,10 @@ public class EmotionUtils {
         }
     }
     public static void createBarChartBitmap(Context context) {
+        mAuth = FirebaseAuth.getInstance();
+        fb = FirebaseFirestore.getInstance();
         PieChart pieChart = new PieChart(context);
         List<PieEntry> barEntriesDay = new ArrayList<>();
-        mAuth = FirebaseAuth.getInstance();
         FirestoreGetId firestoreGetId = new FirestoreGetId(fb);
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());

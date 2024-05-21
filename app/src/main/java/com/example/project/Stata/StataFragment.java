@@ -81,7 +81,7 @@ public class StataFragment extends Fragment {
         FirestoreGetId firestoreGetId = new FirestoreGetId(fb);
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
-
+        barWeek = new int[7];
         firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
             fb.collection("Users")
                     .document(userId)
@@ -123,48 +123,46 @@ public class StataFragment extends Fragment {
                                     }
                                 }
                                 if(date.isAfter(today.minusMonths(1))) diaryEntryListMounth.add(diaryEntry);
-                                if(date.isAfter(today.minusDays(7))){
+                                if (date.isAfter(today.minusDays(7))) {
                                     c.setTime(diaryEntry.getDate());
-                                    int day= c.get(Calendar.DAY_OF_WEEK);
-                                    barWeek = new int[7];
-                                    switch (day){
+                                    int day = c.get(Calendar.DAY_OF_WEEK);
+
+                                    switch (day) {
                                         case 2:
                                             mon++;
-                                            monId+=diaryEntry.getEmotion().getId();
-                                            barWeek[0]=monId/mon;
+                                            monId += diaryEntry.getEmotion().getId();
+                                            barWeek[0] = monId / mon;
                                             break;
                                         case 3:
                                             tue++;
-                                            tueId+=diaryEntry.getEmotion().getId();
-
-                                            barWeek[1]=tueId/tue;
+                                            tueId += diaryEntry.getEmotion().getId();
+                                            barWeek[1] = tueId / tue;
                                             break;
                                         case 4:
                                             wed++;
-                                            wedId+=diaryEntry.getEmotion().getId();
-                                            barWeek[2]=wedId/wed;
+                                            wedId += diaryEntry.getEmotion().getId();
+                                            barWeek[2] = wedId / wed;
                                             break;
                                         case 5:
                                             th++;
-                                            thId+=diaryEntry.getEmotion().getId();
-                                            barWeek[3]=thId/th;
+                                            thId += diaryEntry.getEmotion().getId();
+                                            barWeek[3] = thId / th;
                                             break;
                                         case 6:
                                             fri++;
-                                            friId+=diaryEntry.getEmotion().getId();
-                                            barWeek[4]=friId/fri;
+                                            friId += diaryEntry.getEmotion().getId();
+                                            barWeek[4] = friId / fri;
                                             break;
                                         case 7:
                                             sut++;
-                                            sutId+=diaryEntry.getEmotion().getId();
-                                            barWeek[5]= sutId/sut;
+                                            sutId += diaryEntry.getEmotion().getId();
+                                            barWeek[5] = sutId / sut;
                                             break;
                                         case 1:
                                             sun++;
-                                            sunId+=diaryEntry.getEmotion().getId();
-                                            barWeek[6]=sunId/ sun;
+                                            sunId += diaryEntry.getEmotion().getId();
+                                            barWeek[6] = sunId / sun;
                                             break;
-
                                     }
                                 }
                             }
@@ -250,8 +248,10 @@ public class StataFragment extends Fragment {
 
 
                         if(barWeek!=null){
-                            for(int i=0; i<barWeek.length;i++){
-                                barEntriesWeek.add(new BarEntry(i+1,barWeek[i]));
+                            for (int i = 0; i < barWeek.length; i++) {
+                                int dayOfWeek = (i + 1) % 7;
+                                if (dayOfWeek == 0) dayOfWeek = 7;
+                                barEntriesWeek.add(new BarEntry(dayOfWeek, barWeek[i]));
                             }
                             binding.barChartWeek.getAxisLeft().setDrawLabels(false);
                             binding.barChartWeek.getAxisRight().setMaxWidth(5f);

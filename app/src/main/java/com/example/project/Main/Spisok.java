@@ -1,6 +1,7 @@
 package com.example.project.Main;
 import android.content.Context;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -21,6 +22,7 @@ public class Spisok {
     Context context;
     FirebaseFirestore fb;
     FirebaseUser user;
+    FirebaseAuth mAuth;
      public Spisok(Context context, FirebaseFirestore fb, FirebaseUser user){
          this.context = context;
          this.fb = fb;
@@ -29,7 +31,8 @@ public class Spisok {
 
     public void createSpisok(DataLoadListener listener) {
         firestoreGetId = new FirestoreGetId(fb);
-        firestoreGetId.getId(user.getUid(), userId -> {
+        mAuth = FirebaseAuth.getInstance();
+        firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
             if (userId != null) {
                 fb.collection("Users")
                         .document(userId)
