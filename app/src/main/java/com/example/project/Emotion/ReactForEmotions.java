@@ -7,7 +7,7 @@ public class ReactForEmotions {
     public AddUserToFirebase.HelpEmotion emotionOne(){
         String blabla= "фы"; // брать из бд чтобы моэно было менять
         int time = 121;
-        boolean hz = true; //после фокусировки
+        boolean hz = true;
         AddUserToFirebase.HelpEmotion he = new AddUserToFirebase.HelpEmotion(blabla, time, hz);
         return he;
     }

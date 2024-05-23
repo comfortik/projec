@@ -24,19 +24,10 @@ import com.example.project.NewAppWidget;
 import com.example.project.Note.Note;
 import com.example.project.OnNote;
 import com.example.project.R;
-import com.example.project.Stata.MyValueFormatter;
 import com.example.project.databinding.AlertNoteBinding;
 import com.example.project.databinding.FragmentEmotionDiaryBinding;
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -52,8 +43,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -164,12 +153,9 @@ public class EmotionUtils {
                 .document(userId)
                 .collection("Entry")
                 .add(diaryEntry)
-                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentReference> task) {
-                        if(task.isSuccessful()){
-                            createBarChartBitmap(context);
-                        }
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()){
+                        createBarChartBitmap(context);
                     }
                 }));
 
@@ -177,14 +163,21 @@ public class EmotionUtils {
     }
 
     public void alertNote(Context context, LayoutInflater layoutInflater, FirebaseFirestore fb, FirebaseAuth mAuth, FocusMode focusMode, Emotion emotion){
-         firestoreGetId = new FirestoreGetId(fb);
-        AlertDialog dialog;
+        firestoreGetId = new FirestoreGetId(fb);
+
         this.context = context;
         AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
         builder1.setCancelable(false);
         AlertNoteBinding binding2 = AlertNoteBinding.inflate(layoutInflater, null, false);
         View view = binding2.getRoot();
-        dialog=builder1.setView(view).show();
+        GradientDrawable gradientDrawable = new GradientDrawable();
+        gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+        gradientDrawable.setColor(Color.parseColor("#90A4AE"));
+        gradientDrawable.setCornerRadius(10);
+        builder1.setView(view);
+        AlertDialog alertDialog = builder1.create();
+        alertDialog.getWindow().setBackgroundDrawable(gradientDrawable);
+        alertDialog.show();
         binding2.btnOk.setOnClickListener(v -> {
             if(binding2.etNote.getText().length()==0){
                 Toast.makeText(context, "Введите заметку", Toast.LENGTH_SHORT).show();
@@ -210,7 +203,7 @@ public class EmotionUtils {
                             }
                             else Toast.makeText(context, "Не удалось добавить запись", Toast.LENGTH_SHORT).show();
                         }));
-                dialog.cancel();
+                alertDialog.cancel();
             }
 
         });

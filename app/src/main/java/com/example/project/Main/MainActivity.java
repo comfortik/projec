@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         binding = ActivityMainBinding.inflate(getLayoutInflater(), null, false);
         View customLoadingView = getLayoutInflater().inflate(R.layout.splash_screen, null);
 
@@ -78,12 +80,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         add= new AddUserToFirebase(this, fb, mAuth);
         add.anonimouseSignUp();
         firestoreGetId = new FirestoreGetId(fb);
-//        firestoreGetId.getId(mAuth.getCurrentUser().getUid(), userId -> {
-//            fb.collection("Users")
-//                    .document(userId)
-//                    .collection("Types")
-//                    .add(new Type("test", 5000, 5000));
-//        });
+
         add.setOnAddUserToFirestore(this::getTypes);
         binding.filliedExposed.setDropDownBackgroundResource(R.drawable.png);
         final int NOTIFICATION_PERMISSION_CODE = 123;
@@ -172,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         firestoreGetId.getId(Objects.requireNonNull(mAuth.getCurrentUser()).getUid(), userId1 -> fb.collection("Users")
                 .document(userId1)
                 .collection("Types")
-                .whereEqualTo("name", selectedType) // Укажите значение, с которым сравнивать поле "name"
+                .whereEqualTo("name", selectedType)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
@@ -191,7 +188,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
                     }
                 })
                 .addOnFailureListener(e -> {
-                    // Обработка ошибки получения данных из Firestore
                 }));
     }
     public void soundNotification(){

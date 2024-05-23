@@ -216,11 +216,10 @@ public class StataFragment extends Fragment {
                             barDataSetDay.setIconsOffset(new MPPointF(0, 40));
                             barDataSetDay.setValueTextColor(Color.BLACK);
 
-// Установка меток в легенде
                             Legend legend = binding.barChart.getLegend();
                             legend.setOrientation(Legend.LegendOrientation.VERTICAL);
                             legend.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
-                            legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT); // Расположение справа
+                            legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
                             legend.setDrawInside(false);
                             legend.setXEntrySpace(7f);
                             legend.setYEntrySpace(0f);
@@ -228,7 +227,6 @@ public class StataFragment extends Fragment {
                             legend.setTextSize(12f);
                             legend.setWordWrapEnabled(true);
 
-// Установка меток для цветов и айди
                             for (int i = 0; i < labels.size(); i++) {
                                 LegendEntry entry = new LegendEntry();
                                 entry.formColor = colorsList.get(i);
@@ -239,6 +237,7 @@ public class StataFragment extends Fragment {
 
                             PieData barDataDay = new PieData(barDataSetDay);
                             binding.barChart.setData(barDataDay);
+                            binding.barChart.getDescription().setEnabled(false);
                             binding.barChart.invalidate();
 
 
@@ -259,6 +258,7 @@ public class StataFragment extends Fragment {
                             binding.barChartWeek.getAxisRight().setMinWidth(0f);
                             binding.barChartWeek.getAxisRight().setValueFormatter(new MyValueFormatter());
                             binding.barChartWeek.setDrawValueAboveBar(false);
+                            binding.barChartWeek.getDescription().setEnabled(false);
                             BarDataSet barDataSetWeek = new BarDataSet(barEntriesWeek, "Week");
                             BarData barDataWeek = new BarData(barDataSetWeek);
                             barDataSetWeek.setColor(Color.parseColor("#455A64"));
@@ -274,8 +274,9 @@ public class StataFragment extends Fragment {
                             binding.barChartMounth.getAxisRight().setMaxWidth(5f);
                             binding.barChartMounth.getAxisRight().setGranularity(1f);
                             binding.barChartMounth.getAxisRight().setMinWidth(0f);
+                            binding.barChartMounth.getXAxis().setDrawLabels(false);
                             binding.barChartMounth.getAxisRight().setValueFormatter(new MyValueFormatter());
-
+                            binding.barChartMounth.getDescription().setEnabled(false);
                             LineDataSet barDataSetMounth = new LineDataSet(barEntriesMounth, "Mounth");
                             LineData barDataMounth = new LineData(barDataSetMounth);
                             barDataSetMounth.setColor(Color.parseColor("#455A64"));

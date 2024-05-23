@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/bottom_stata"
-        android:icon="@drawable/baseline_vaccines_24"
+        android:icon="@drawable/baseline_bar_chart_24"
         android:title="Profile" />
     <item
         android:id="@+id/bottom_emotionDiary"
@@ -15,10 +15,10 @@
     <item
         android:id="@+id/bottom_sound"
         android:icon="@drawable/baseline_auto_awesome_24"
-        android:title="Profile" />
+        android:title="Sound" />
     <item
         android:id="@+id/bottom_profile"
-        android:icon="@drawable/baseline_accessibility_24"
+        android:icon="@drawable/baseline_menu_book_24"
         android:title="Profile" />
 
 </menu>

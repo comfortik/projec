@@ -5,19 +5,22 @@
     android:orientation="vertical"
     android:layout_gravity="center_vertical"
     android:layout_margin="12dp"
-    android:background="#B0BEC5">
+    android:background="@drawable/alert_note_shape">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Оставь заметку"
         android:paddingStart="16dp"
         android:paddingVertical="15dp"
+        android:textColor="@color/black"
         android:fontFamily="monospace"/>
     <EditText
         android:id="@+id/etNote"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
+        android:textColor="@color/black"
+        android:backgroundTint="@color/black"
         android:paddingVertical="12dp"/>
     <Button
         android:id="@+id/btnOk"
@@ -25,7 +28,7 @@
         android:layout_height="wrap_content"
         android:text="Ok"
         android:textColor="@color/black"
-        android:backgroundTint="#B0BEC5"
+        android:backgroundTint="#90A4AE"
         android:layout_gravity="end"/>
 
 </LinearLayout>

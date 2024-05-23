@@ -1,21 +1,13 @@
 package com.example.project.Main;
 
-import static android.content.ContentValues.TAG;
-
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
 import com.example.project.Emotion.OnAddUserToFirestore;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,17 +47,13 @@ public class AddUserToFirebase {
             fb.collection("Users")
                     .whereEqualTo("uid", user.getUid())
                     .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                            onAddUserToFirestore.addUser();
+                        } else {
 
-                                onAddUserToFirestore.addUser();
-                            } else {
+                            addUser();
 
-                                addUser();
-
-                            }
                         }
                     });
 
