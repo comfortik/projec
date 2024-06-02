@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
     testImplementation(libs.junit)
+    implementation("com.squareup.okhttp3:okhttp:4.9.0")
     implementation("com.google.android.flexbox:flexbox:3.0.0")
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
