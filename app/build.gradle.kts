@@ -61,4 +61,5 @@ dependencies {
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("com.google.android.gms:play-services-wearable:18.1.0")
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
 }

@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -450,6 +451,21 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         NotificationManager notificationManager= (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
     }
+    private void checkAndShowAlert() {
+        SharedPreferences prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+        boolean showAlert = prefs.getBoolean("show_alert", false);
+
+        if (showAlert) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Напоминание")
+                    .setMessage("Пожалуйста, проверьте свое самочувствие.")
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        prefs.edit().putBoolean("show_alert", false).apply();
+                    })
+                    .setCancelable(false)
+                    .show();
+        }
+    }
 }
 class NotificationHelper {
 
@@ -484,6 +500,7 @@ class NotificationHelper {
 
 
     }
+
 }
 
 

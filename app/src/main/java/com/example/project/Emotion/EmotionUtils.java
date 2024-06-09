@@ -77,7 +77,6 @@ public class EmotionUtils {
     static int pieDay[];
     private String url="http://172.20.10.2:5000";
     private String POST="POST";
-    private String GET="GET";
     static  int one, two, three, four, five, all=0;
     static List<LegendEntry> legendEntries;
     FirestoreGetId firestoreGetId;
@@ -97,31 +96,25 @@ public class EmotionUtils {
 
 
     public  void setListeners(Context context, FragmentEmotionDiaryBinding binding) {
-
         binding.imgPloho.setOnClickListener(v -> {
-            sendRequest(context,POST, "getname", "name", "1");
             Emotion emotion = new Emotion(1);
-//            emotionBtns(context, emotion);
+            emotionBtns(context, emotion);
         });
         binding.imgTakoe.setOnClickListener(v -> {
-            sendRequest(context,POST, "getname", "name", "2");
             Emotion emotion= new Emotion(2);
-//            emotionBtns(context, emotion);
+            emotionBtns(context, emotion);
         });
         binding.imgNorm.setOnClickListener(v -> {
-            sendRequest(context,POST, "getname", "name", "3");
             Emotion emotion= new Emotion(3);
-//            emotionBtns(context, emotion);
+            emotionBtns(context, emotion);
         });
         binding.imgWow.setOnClickListener(v -> {
-            sendRequest(context,POST, "getname", "name", "4");
             Emotion emotion= new Emotion(4);
-//            emotionBtns(context, emotion);
+            emotionBtns(context, emotion);
         });
         binding.imgSuper.setOnClickListener(v -> {
-            sendRequest(context,POST, "getname", "name", "5");
             Emotion emotion= new Emotion(5);
-//            emotionBtns(context, emotion);
+            emotionBtns(context, emotion);
         });
     }
 
@@ -145,64 +138,31 @@ public class EmotionUtils {
                 break;
         }
     }
-    private void sendRequest(Context context, String type,String method,String paramname,String param){
-        String fullURL=url+"/"+method+(param==null?"":"/"+param);
-        Request request;
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS).build();
-        if(type.equals(POST)){
-            RequestBody formBody = new FormBody.Builder()
-                    .add(paramname, param)
-                    .build();
-            request=new Request.Builder()
-                    .url(fullURL)
-                    .post(formBody)
-                    .build();
-        }else{
-            request = new Request.Builder()
-                    .url(fullURL)
-                    .build();
-        }
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-            }
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                final String responseData = response.body().string();
-                AlertDialogEmotionDiary(context, new AddUserToFirebase.HelpEmotion(responseData, 1,true) ,new Emotion(Integer.parseInt(param)));
-            }
-        });
-    }
+
 
     private void AlertDialogEmotionDiary(Context context, AddUserToFirebase.HelpEmotion helpEmotion, Emotion emotion) {
-        ((AppCompatActivity) context).runOnUiThread(() -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialogText);
-            builder.setTitle("Хочешь оставить заметку?")
-                    .setMessage(helpEmotion.getHelp())
-                    .setCancelable(false)
-                    .setPositiveButton("Да", (dialog, which) -> {
-                        onNote.onNote(emotion);
-                        dialog.cancel();
-                    })
-                    .setNegativeButton("Нет", (dialog, which) -> {
-                        onCloseDialogEmotionListener.onHideDialog(emotion);
-                        dialog.cancel();
-                    });
-            this.context = context;
-            GradientDrawable gradientDrawable = new GradientDrawable();
-            gradientDrawable.setShape(GradientDrawable.RECTANGLE);
-            gradientDrawable.setColor(Color.parseColor("#90A4AE"));
-            gradientDrawable.setCornerRadius(10);
-            AlertDialog alertDialog = builder.create();
-            alertDialog.getWindow().setBackgroundDrawable(gradientDrawable);
-            alertDialog.show();
-        });
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialogText);
+        builder.setTitle(helpEmotion.getHelp())
+                .setTitle("")
+                .setMessage("Хочешь оставить заметку?")
+                .setCancelable(false)
+                .setPositiveButton("Да", (dialog, which) -> {
+                    onNote.onNote(emotion);
+                    dialog.cancel();
+                })
+                .setNegativeButton("Нет", (dialog, which) -> {
+                    onCloseDialogEmotionListener.onHideDialog(emotion);
+                    dialog.cancel();
+                });
+                this.context=context;
+        GradientDrawable gradientDrawable = new GradientDrawable();
+        gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+        gradientDrawable.setColor(Color.parseColor("#90A4AE"));
+        gradientDrawable.setCornerRadius(10);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.getWindow().setBackgroundDrawable(gradientDrawable);
+        alertDialog.show();
     }
-
     public void alertEmotion(FirebaseFirestore fb, FirebaseAuth mAuth, FocusMode focusMode, Emotion emotion){
         FirestoreGetId  firestoreGetId = new FirestoreGetId(fb);
         this.fb = fb;
@@ -229,7 +189,6 @@ public class EmotionUtils {
 
     public void alertNote(Context context, LayoutInflater layoutInflater, FirebaseFirestore fb, FirebaseAuth mAuth, FocusMode focusMode, Emotion emotion){
         firestoreGetId = new FirestoreGetId(fb);
-
         this.context = context;
         AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
         builder1.setCancelable(false);
@@ -268,11 +227,13 @@ public class EmotionUtils {
                             }
                             else Toast.makeText(context, "Не удалось добавить запись", Toast.LENGTH_SHORT).show();
                         }));
+
                 alertDialog.cancel();
             }
 
         });
     }
+
     private static void updateWidget( Context context, Bitmap bitmap) {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, NewAppWidget.class));
