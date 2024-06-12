@@ -2,13 +2,17 @@ package com.example.project.Profile;
 
 
 
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +29,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import org.checkerframework.checker.units.qual.C;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -46,28 +52,23 @@ public class ProfileHolder extends RecyclerView.ViewHolder {
         switch (diaryEntry.getId()){
             case 1:
                 binding.tvFocus.setText(diaryEntry.getFocusMode().getName());
-                if(diaryEntry.getFocusMode().isInterval()){
-                    binding.tvFocusTime.setText(diaryEntry.getFocusMode().getTime() +"\n"+diaryEntry.getFocusMode().getTimeInterval());
-                } else if (!diaryEntry.getFocusMode().isInterval()) {
-                    binding.tvFocusTime.setText(diaryEntry.getFocusMode().getTime());
-                }
+                setText(diaryEntry);
                 setImage(diaryEntry.getEmotion().getId());
                 binding.time.setText(convertToLocalDateViaInstant(diaryEntry.getDate()));
                 break;
             case 2:
+
                 binding.tvFocus.setText(diaryEntry.getFocusMode().getName());
-                if(diaryEntry.getFocusMode().isInterval()){
-                    binding.tvFocusTime.setText(diaryEntry.getFocusMode().getTime() +"\n"+diaryEntry.getFocusMode().getTimeInterval());
-                } else if (!diaryEntry.getFocusMode().isInterval()) {
-                    binding.tvFocusTime.setText(diaryEntry.getFocusMode().getTime());
-                }
+                setText(diaryEntry);
                 setImage(diaryEntry.getEmotion().getId());
                 binding.time.setText(convertToLocalDateViaInstant(diaryEntry.getDate()));
             case 3:
+                setText(diaryEntry);
                 setImage(diaryEntry.getEmotion().getId());
                 binding.time.setText(convertToLocalDateViaInstant(diaryEntry.getDate()));
                 break;
             case 4:
+                setText(diaryEntry);
                 setImage(diaryEntry.getEmotion().getId());
                 binding.time.setText(convertToLocalDateViaInstant(diaryEntry.getDate()));
                 break;
@@ -82,6 +83,24 @@ public class ProfileHolder extends RecyclerView.ViewHolder {
         }
         else return dateToConvert.toString();
     }
+    public void setText(DiaryEntry diaryEntry){
+        if(diaryEntry.getEmotion().getEmotionWords()!=null && !diaryEntry.getEmotion().getEmotionWords().isEmpty())    {
+            binding.tvFocus.setText(diaryEntry.getEmotion().getEmotionWords().get(0));
+            binding.tvFocusTime.setVisibility(View.GONE);
+            binding.tvFocus.setBackgroundResource(R.color.bynBackground);
+            binding.tvFocus.setTextColor(Color.WHITE);
+            ViewGroup.LayoutParams layoutParams = binding.tvFocus.getLayoutParams();
+            layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            binding.tvFocus.setLayoutParams(layoutParams);
+            binding.tvFocus.setPadding(25, 12,25 ,12 );
+            GradientDrawable shape = new GradientDrawable();
+            shape.setShape(GradientDrawable.RECTANGLE);
+            shape.setCornerRadius(10);
+            shape.setColor(Color.parseColor("#546E7A"));
+            binding.tvFocus.setBackground(shape);
+        }
+    }
+
     private void setImage(int id){
         switch(id){
             case 1:

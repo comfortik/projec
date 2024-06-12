@@ -5,7 +5,7 @@
         <item name="backgroundTint">#48585F</item>
         <item name="cornerRadius">25dp</item>
         <item name="android:textColor">#FFFFFF</item>
-        <item name="fontFamily">sans-serif-light</item>
+        <item name="fontFamily">monospace</item>
     </style>
 
     <style name="fragment">

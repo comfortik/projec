@@ -8,10 +8,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,8 +34,10 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.MPPointF;
+import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -51,6 +55,7 @@ import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.os.Bundle;
 import android.view.View;
@@ -77,12 +82,64 @@ public class EmotionUtils {
     static int pieDay[];
     private String url="http://172.20.10.2:5000";
     private String POST="POST";
+    private static final String[][] moods = {
+            {
+                    "Депрессивный", "Угнетенный", "Опустошенный", "Разочарованный", "Безнадежный",
+                    "Отчаявшийся", "Тоскливый", "Меланхоличный", "Печальный", "Несчастный",
+                    "Раздраженный", "Злой", "Гневный", "Разозленный", "В отчаянии",
+                    "Обескураженный", "Разочарованный", "Удрученный", "Загнанный в угол", "Подавленный",
+                    "Беспокойный", "Неуверенный", "Тревожный", "Страдающий", "Мучимый",
+                    "Одинокий", "Изолированный", "Нелюбимый", "Неудовлетворенный", "Разочарованный",
+                    "Несчастный", "Разбитый", "Беспомощный", "Беззащитный", "Униженный"
+            },
+            {
+                    "Грустный", "Печальный", "Тоскливый", "Разочарованный", "Уставший",
+                    "Скучающий", "Безразличный", "Нервный", "Обеспокоенный", "Неуверенный",
+                    "Одинокий", "Изолированный", "Несчастный", "Разочарованный", "Недовольный",
+                    "Огорченный", "Расстроенный", "Сокрушенный", "Разочарованный", "Подавленный",
+                    "Задумчивый", "Меланхоличный", "Сентиментальный", "Тихий", "Спокойный",
+                    "Неуверенный", "Нерешительный", "Смущенный", "Неловкий", "Осторожный",
+                    "Немного подавленный", "Разочарованный", "Скучающий", "Немного тревожный", "Утомленный"
+            },
+            {
+                    "Спокойный", "Расслабленный", "Нейтральный", "Тихий", "Безразличный",
+                    "Задумчивый", "Сконцентрированный", "Сосредоточенный", "Обычный", "Средний",
+                    "Невозмутимый", "Уверенный", "Равнодушный", "Невозбудимый", "Сдержанный",
+                    "Созерцательный", "Ожидающий", "Открытый", "Готовый", "Оптимистичный",
+                    "Заинтересованный", "Любопытный", "Свободный", "Уравновешенный", "Сбалансированный",
+                    "Независимый", "Самостоятельный", "Независимый", "Успокоенный", "Мирно",
+                    "Безмятежный", "Отдохнувший", "Свежий", "Ясный", "Чистый"
+            },
+            {
+                    "Счастливый", "Радостный", "Веселый", "Взволнованный", "Восхищенный",
+                    "Уверенный", "Энергичный", "Оптимистичный", "Воодушевленный", "Вдохновленный",
+                    "Благодарный", "Счастливый", "Довольный", "Удовлетворенный", "Счастливый",
+                    "Заинтересованный", "Любопытный", "Сострадательный", "Сочувствующий", "Дружелюбный",
+                    "Общительный", "Влюбленный", "Преданный", "Верный", "Заботливый",
+                    "Отзывчивый", "Щедрый", "Доброжелательный", "Сотрудничающий", "Поддерживающий",
+                    "Сильный", "Смелый", "Мотивированный", "Создающий", "Успешный"
+            },
+            {
+                    "Возбужденный", "В восторге", "Взволнованный", "Радивый", "Эйфорический",
+                    "Триумфальный", "Победоносный", "Восхитительный", "Превосходный", "Великолепный",
+                    "Прекрасный", "Чудесный", "Захватывающий", "Волнующий", "Вдохновляющий",
+                    "Любящий", "Преданный", "Благодарный", "Счастливый", "Счастливый",
+                    "Уверенный", "Свободный", "Могущественный", "Непобедимый", "Непревзойденный",
+                    "Креативный", "Талантливый", "Успешный", "Сильный", "Мощный",
+                    "Живой", "Энергичный", "Веселый", "Счастливый", "Свободный"
+            }
+    };
+    ArrayList<String> emotionWords = new ArrayList<>();
+
+
+    boolean isFirstClick = true;
     static  int one, two, three, four, five, all=0;
     static List<LegendEntry> legendEntries;
     FirestoreGetId firestoreGetId;
     static Bitmap chartBitmap;
     private OnCloseDialogEmotionListener onCloseDialogEmotionListener;
     private Context context;
+    FragmentEmotionDiaryBinding binding;
     private static FirebaseFirestore fb;
     private static FirebaseAuth mAuth;
 
@@ -116,27 +173,63 @@ public class EmotionUtils {
             Emotion emotion= new Emotion(5);
             emotionBtns(context, emotion);
         });
+        this.binding = binding;
     }
 
-    public  void emotionBtns(Context context, Emotion emotion ) {
+    public  void emotionBtns(Context context, Emotion emotion) {
         int emotionId = emotion.getId();
         switch (emotionId){
             case 1:
-                AlertDialogEmotionDiary(context, reactForEmotions.emotionOne(), emotion);
+                setButtons(moods[0], context, binding, emotion);
                 break;
             case 2:
-                AlertDialogEmotionDiary(context, reactForEmotions.emotionTwo(), emotion);
+                setButtons(moods[1], context, binding, emotion);
                 break;
             case 3:
-                AlertDialogEmotionDiary(context, reactForEmotions.emotionThree(), emotion);
+                setButtons(moods[2], context, binding, emotion);
                 break;
             case 4:
-                AlertDialogEmotionDiary(context, reactForEmotions.emotionFour(), emotion);
+                setButtons(moods[3], context, binding, emotion);
                 break;
             case 5:
-                AlertDialogEmotionDiary(context, reactForEmotions.emotionFive(), emotion);
+                setButtons(moods[4], context, binding, emotion);
                 break;
         }
+    }
+    public void setButtons(String[] words, Context context, FragmentEmotionDiaryBinding binding, Emotion emotion) {
+        binding.flexbox.removeAllViews();
+        for (String word : words) {
+            MaterialButton button = new MaterialButton(context);
+            button.setText(word);
+            button.setCornerRadius(25);
+            button.setTextColor(Color.WHITE);
+            button.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            button.setTypeface(Typeface.MONOSPACE);
+
+            FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(0, 0, 12, 0);
+            button.setLayoutParams(params);
+
+            button.setOnClickListener(v -> {
+                button.setBackgroundColor(ContextCompat.getColor(context, R.color.bynBackgroungLight));
+                if(!emotionWords.contains(word)) emotionWords.add(word);
+            });
+            binding.flexbox.addView(button);
+        }
+
+        binding.scrollView.setVisibility(View.VISIBLE);
+        binding.btnOk.setVisibility(View.VISIBLE);
+
+        binding.btnOk.setOnClickListener(v -> {
+            emotion.setEmotionWords(emotionWords);
+            AlertDialogEmotionDiary(context, reactForEmotions.emotionOne(), emotion);
+            binding.btnOk.setVisibility(View.GONE);
+
+            binding.flexbox.removeAllViews();
+        });
     }
 
 

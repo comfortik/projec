@@ -56,9 +56,10 @@ public class ProfileFragment extends Fragment {
     private ProfileViewModel mViewModel;
     private OnHideFragmentContainerListener hideFragmentContainerListener;
     FragmentProfileBinding binding;
+
     List<DiaryEntry> diaryEntryList= new ArrayList<>();
     ProfileAdapter adapter;
-    private String url="http://192.168.31.159:5000";
+    private String url="http://172.20.10.2:5000";
     private String POST="POST";
 
     public static ProfileFragment newInstance() {
@@ -149,7 +150,6 @@ public class ProfileFragment extends Fragment {
                             .document(userId)
                             .collection("Entry")
                             .whereGreaterThanOrEqualTo("date", getStartOfWeek())
-//                            .whereLessThanOrEqualTo("timestamp",currentDate)
                             .get()
                             .addOnSuccessListener(queryDocumentSnapshots -> {
                                 int totalEmotions = 0;

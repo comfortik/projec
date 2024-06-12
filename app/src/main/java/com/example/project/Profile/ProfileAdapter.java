@@ -2,18 +2,26 @@ package com.example.project.Profile;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.project.Emotion.Emotion;
 import com.example.project.Main.DiaryEntry;
 import com.example.project.R;
 import com.example.project.databinding.FragmentDiaryEntryBinding;
 import com.example.project.databinding.FragmentEmotionDiaryBinding;
 import com.example.project.databinding.ItemDiaryBinding;
+import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +70,8 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileHolder> {
         binding.layout.setClipToOutline(true);
         switch (diaryEntry.getId()){
             case 1:
+
+                setText(diaryEntry.getEmotion().getEmotionWords(), context, binding,diaryEntry.getEmotion());
                 if(diaryEntry.getFocusMode().isInterval()){
                     setImage(diaryEntry.getEmotion().getId());
                     binding.tvFocus.setText(diaryEntry.getFocusMode().getTime());
@@ -75,6 +85,8 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileHolder> {
                 }
                 break;
             case 2:
+
+                setText(diaryEntry.getEmotion().getEmotionWords(), context, binding,diaryEntry.getEmotion());
                 if(diaryEntry.getFocusMode().isInterval()){
                     setImage(diaryEntry.getEmotion().getId());
                     binding.tvFocus.setText(diaryEntry.getFocusMode().getTime());
@@ -90,10 +102,14 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileHolder> {
                 }
                 break;
             case 3:
+
+                setText(diaryEntry.getEmotion().getEmotionWords(), context, binding,diaryEntry.getEmotion());
                 setImage(diaryEntry.getEmotion().getId());
                 binding.time.setText(diaryEntry.getDate().toString());
                 break;
             case 4:
+
+                setText(diaryEntry.getEmotion().getEmotionWords(), context, binding,diaryEntry.getEmotion());
                 setImage(diaryEntry.getEmotion().getId());
                 binding.note.setText(diaryEntry.getNote().getNote());
                 binding.time.setText(diaryEntry.getDate().toString());
@@ -111,6 +127,33 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileHolder> {
         });
 
     }
+    public void setText(ArrayList<String> words, Context context, FragmentDiaryEntryBinding binding, Emotion emotion) {
+        binding.flexbox.removeAllViews();
+        for (String word : words) {
+            TextView button = new TextView(context);
+            button.setText(word);
+            button.setTextColor(Color.WHITE);
+            button.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            button.setTypeface(Typeface.MONOSPACE);
+            FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            button.setPadding(25, 12, 25, 12);
+            params.setMargins(0, 0 , 0, 12);
+            button.setLayoutParams(params);
+            binding.flexbox.addView(button);
+            GradientDrawable shape = new GradientDrawable();
+            shape.setShape(GradientDrawable.RECTANGLE);
+            shape.setCornerRadius(10);
+            shape.setColor(Color.parseColor("#546E7A"));
+            button.setBackground(shape);
+
+        }
+        binding.scrollView.setVisibility(View.VISIBLE);
+
+    }
+
     void deleteItem(int index) {
         diaryEntryList.remove(index);
         notifyItemRemoved(index);

@@ -17,6 +17,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -81,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         add= new AddUserToFirebase(this, fb, mAuth);
         add.anonimouseSignUp();
         firestoreGetId = new FirestoreGetId(fb);
-
         add.setOnAddUserToFirestore(this::getTypes);
         binding.filliedExposed.setDropDownBackgroundResource(R.drawable.png);
         final int NOTIFICATION_PERMISSION_CODE = 123;
@@ -399,19 +401,24 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
         }
 
     }
-    private void alertDialogEmotion(FocusMode focusMode){
+    private void alertDialogEmotion(FocusMode focusMode) {
         AlertDialog dialog;
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-        FragmentEmotionDiaryBinding binding1 = FragmentEmotionDiaryBinding.inflate(getLayoutInflater(), null, false);
-        View view = binding1.getRoot();
 
         ReactForEmotions reactForEmotions = new ReactForEmotions();
         EmotionUtils emotionUtils = new EmotionUtils(reactForEmotions);
+        FragmentEmotionDiaryBinding binding1 = FragmentEmotionDiaryBinding.inflate(getLayoutInflater(), null, false);
+
+        View view = binding1.getRoot();
+
         emotionUtils.setListeners(this, binding1);
         builder1.setCancelable(false);
         dialog = builder1.setView(view).show();
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         binding1.main.setBackgroundResource(R.drawable.alert_profile);
+
+
+
         emotionUtils.setOnCloseDialogEmotionListener(emotion -> {
             emotionUtils.alertEmotion(fb, mAuth, focusMode, emotion);
             dialog.cancel();
@@ -420,8 +427,20 @@ public class MainActivity extends AppCompatActivity implements post, OnHideFragm
             dialog.cancel();
             emotionUtils.alertNote(MainActivity.this, getLayoutInflater(), fb, mAuth, focusMode, emotion);
         });
+        binding1.scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                binding1.flexbox.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                ViewGroup.LayoutParams layoutParams = binding1.scrollView.getLayoutParams();
+                layoutParams.height = 500;
+                binding1.scrollView.setVisibility(View.GONE);
+                binding1.scrollView.setLayoutParams(layoutParams);
+            }
+        });
 
     }
+
+
     @Override
     public void onButtonTimerClick() {
         binding.fragmentView.setVisibility(View.GONE);
